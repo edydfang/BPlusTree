@@ -6,6 +6,7 @@ OPTIMIZATION?=
 CFLAGS?=-std=c++0x $(OPTIMIZATION) -Wall $(PROF)
 CCLINK?=
 DEBUG?=-g -ggdb
+INCLUDE=-I.
 CCOPT= $(CFLAGS) $(ARCH) $(PROF)
 
 CCCOLOR="\033[34m"
@@ -22,7 +23,7 @@ endif
 
 TESTPRGNAME = bpt_unit_test
 
-OBJ = bpt.o util/cli.o
+OBJ = bpt.o util/cli.o util/benchmark_utils.o
 PRGNAME = bpt_cli
 
 DUMP_OBJ = bpt.o util/dump_numbers.o
@@ -61,13 +62,13 @@ bpt_cli: $(OBJ)
 	$(QUIET_LINK)$(CXX) -o $(PRGNAME) $(CCOPT) $(DEBUG) $(OBJ) $(CCLINK)
 
 bpt_unit_test:
-	$(QUIET_LINK)$(CXX) -o bpt_unit_test $(CCOPT) $(DEBUG) util/unit_test.cc bpt.cc $(TEST) $(CCLINK) 
+	$(QUIET_LINK)$(CXX) -o bpt_unit_test $(INCLUDE) $(CCOPT) $(DEBUG) util/unit_test.cc bpt.cc util/benchmark_utils.cc $(TEST) $(CCLINK) 
 
 bpt_dump_numbers: $(DUMP_OBJ)
 	$(QUIET_LINK)$(CXX) -o $(DUMPPRGNAME) $(CCOPT) $(DEBUG) $(DUMP_OBJ) $(CCLINK)
 
 bench_unit_test: ./util/benchmark_utils_test.cc
-	$(QUIET_LINK)$(CXX) -o bench_unit_test -I. $(DEBUG) util/benchmark_utils_test.cc util/benchmark_utils.cc $(TEST) $(CCLINK) 
+	$(QUIET_LINK)$(CXX) -o bench_unit_test $(INCLUDE) $(DEBUG) util/benchmark_utils_test.cc util/benchmark_utils.cc $(TEST) $(CCLINK) 
 
 
 %.o: %.cc

@@ -21,9 +21,9 @@ namespace bpt {
 
 /* meta information of B+ tree */
 typedef struct {
-  size_t order;             /* `order` of B+ tree */
-  size_t value_size;        /* size of value */
-  size_t key_size;          /* size of key */
+  size_t order;      /* `order` of B+ tree */
+  size_t value_size; /* size of value */
+  size_t key_size;   /* size of key */
   size_t num_key;
   size_t internal_node_num; /* how many internal nodes */
   size_t leaf_node_num;     /* how many leafs */
@@ -72,14 +72,17 @@ struct leaf_node_t {
 /* the encapulated B+ tree */
 class bplus_tree {
  public:
-  explicit bplus_tree(const char *path, bool force_empty = false, u_int8_t num_key=1);
+  explicit bplus_tree(const char *path, bool force_empty = false,
+                      u_int8_t num_key = 1);
   /* abstract operations */
   int search(const key_t &key, value_t *value) const;
-  int search_single(const key_t &key, value_t *value, u_int8_t key_idx=0) const;
+  int search_single(const key_t &key, value_t *value,
+                    u_int8_t key_idx = 0) const;
   int search_range(key_t *left, const key_t &right, value_t *values, size_t max,
                    bool *next = NULL) const;
-  int search_range_single(key_t *left, const key_t &right, value_t *values, size_t max,
-                   bool *next = NULL, u_int8_t key_idx=0) const;
+  int search_range_single(key_t *left, const key_t &right, value_t *values,
+                          size_t max, bool *next = NULL,
+                          u_int8_t key_idx = 0) const;
   int remove(const key_t &key);
   int insert(const key_t &key, value_t value);
   // useless in our setting

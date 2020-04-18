@@ -1,4 +1,5 @@
 // Copyright [2020] <Copyright Owner>  [legal/copyright]
+#include <predefined.h>
 #include <string.h>
 #include <util/benchmark_utils.h>
 
@@ -20,4 +21,8 @@ vector<uint32_t> date2keyarr(const char* date_str, uint32_t record_id) {
   }
   comp_key[3] = record_id;
   return comp_key;
+}
+
+bpt::key_t data2key(const char* date_str, uint32_t record_id) {
+  return bpt::key_t(date2keyarr(date_str, record_id));
 }

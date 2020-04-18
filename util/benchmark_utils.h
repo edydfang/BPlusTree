@@ -7,5 +7,6 @@
 using std::vector;
 
 vector<uint32_t> date2keyarr(const char* date_str, uint32_t record_id);
+bpt::key_t data2key(const char* date_str, uint32_t record_id);
 
 #endif  // UTIL_BENCHMARK_UTILS_H_
