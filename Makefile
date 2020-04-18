@@ -36,7 +36,7 @@ process:
 	./data_process
 
 test:
-	@-rm bpt_unit_test
+	@-rm -f bpt_unit_test
 	$(MAKE) TEST="-DUNIT_TEST" bpt_unit_test
 	./bpt_unit_test
 
@@ -68,8 +68,7 @@ bpt_dump_numbers: $(DUMP_OBJ)
 	$(QUIET_LINK)$(CXX) -o $(DUMPPRGNAME) $(CCOPT) $(DEBUG) $(DUMP_OBJ) $(CCLINK)
 
 bench_unit_test: ./util/benchmark_utils_test.cc
-	$(QUIET_LINK)$(CXX) -o bench_unit_test $(INCLUDE) $(DEBUG) util/benchmark_utils_test.cc util/benchmark_utils.cc $(TEST) $(CCLINK) 
-
+	$(QUIET_LINK)$(CXX) -o bench_unit_test $(DEBUG) util/benchmark_utils_test.cc util/benchmark_utils.cc $(TEST) $(CCLINK) 
 
 %.o: %.cc
 	$(QUIET_CC)$(CXX) -o $@ -c $(CFLAGS) $(TEST) $(DEBUG) $(COMPILE_TIME) $<

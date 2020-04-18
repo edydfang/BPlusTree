@@ -3,20 +3,20 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <algorithm>
+
 
 #define PRINT(a) \
   fprintf(stderr, "\033[33m%s\033[0m \033[32m%s\033[0m\n", a, "Passed")
 #define INSERT(key, rid, val) \
   tree.insert(bpt::key_t(date2keyarr(key, rid)), val)
-#include "../bpt.h"
+#define SIZE 128
+#include <bpt.h>
 #include <util/benchmark_utils.h>
-
+#include <algorithm>
 using bpt::bplus_tree;
 using bpt::key_t;
 
 int main(int argc, char *argv[]) {
-  const int size = 128;
 
   {
     bplus_tree tree("test.db", true);
