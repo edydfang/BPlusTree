@@ -231,6 +231,7 @@ int bplus_tree::insert(const key_t& key, value_t value)
         if (place_right)
             ++point;
 
+        // TODO adjust zone map
         // split
         std::copy(leaf.children + point, leaf.children + leaf.n,
                   new_leaf.children);
@@ -258,6 +259,7 @@ int bplus_tree::insert(const key_t& key, value_t value)
     return 0;
 }
 
+//TODO adjust map zone
 int bplus_tree::update(const key_t& key, value_t value)
 {
     off_t offset = search_leaf(key);
