@@ -4,5 +4,5 @@ bpt_cli
 bpt_unit_test
 bpt_dump_numbers
 bpt_unit_test/*
-/.vscode
-/bpt_unit_test.dSYM
+bpt_unit_test.dSYM
+.vscode/*
