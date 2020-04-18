@@ -30,6 +30,10 @@ DUMPPRGNAME = bpt_dump_numbers
 
 all: $(DUMPPRGNAME) $(PRGNAME)
 
+process:
+	$(CXX) util/data_process.cpp -o data_process
+	./data_process
+
 test:
 	@-rm bpt_unit_test
 	$(MAKE) TEST="-DUNIT_TEST" bpt_unit_test
@@ -45,7 +49,7 @@ noopt:
 	$(MAKE) OPTIMIZATION=""
 
 clean:
-	rm -rf $(PRGNAME) $(TESTPRGNAME) $(DUMPPRGNAME) $(CHECKDUMPPRGNAME) $(CHECKAOFPRGNAME) *.o *.gcda *.gcno *.gcov util/*.o
+	rm -rf $(PRGNAME) $(TESTPRGNAME) $(DUMPPRGNAME) $(CHECKDUMPPRGNAME) $(CHECKAOFPRGNAME) *.o *.gcda *.gcno *.gcov util/*.o data_process
 
 distclean: clean
 	$(MAKE) clean
