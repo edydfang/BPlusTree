@@ -1,5 +1,5 @@
-#ifndef BPT_H
-#define BPT_H
+#ifndef BPT_H_
+#define BPT_H_
 
 #include <assert.h>
 #include <stddef.h>
@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 #ifndef UNIT_TEST
-#include "predefined.h"
+#include "./predefined.h"
 #else
 #include "util/unit_test_predefined.h"
 #endif
@@ -24,6 +24,7 @@ typedef struct {
   size_t order;             /* `order` of B+ tree */
   size_t value_size;        /* size of value */
   size_t key_size;          /* size of key */
+  size_t num_key;
   size_t internal_node_num; /* how many internal nodes */
   size_t leaf_node_num;     /* how many leafs */
   size_t height;            /* height of tree (exclude leafs) */
@@ -71,29 +72,26 @@ struct leaf_node_t {
 /* the encapulated B+ tree */
 class bplus_tree {
  public:
-  bplus_tree(const char *path, bool force_empty = false);
-
+  explicit bplus_tree(const char *path, bool force_empty = false, u_int8_t num_key=1);
   /* abstract operations */
   int search(const key_t &key, value_t *value) const;
+  int search_single(const key_t &key, value_t *value, u_int8_t key_idx=0) const;
   int search_range(key_t *left, const key_t &right, value_t *values, size_t max,
                    bool *next = NULL) const;
+  int search_range_single(key_t *left, const key_t &right, value_t *values, size_t max,
+                   bool *next = NULL, u_int8_t key_idx=0) const;
   int remove(const key_t &key);
   int insert(const key_t &key, value_t value);
+  // useless in our setting
   int update(const key_t &key, value_t value);
   meta_t get_meta() const { return meta; }
 
-#ifndef UNIT_TEST
-
- private:
-#else
-
  public:
-#endif
   char path[512];
   meta_t meta;
 
   /* init empty tree */
-  void init_from_empty();
+  void init_from_empty(u_int8_t num_key);
 
   /* find index */
   off_t search_index(const key_t &key) const;
@@ -216,4 +214,4 @@ class bplus_tree {
 
 }  // namespace bpt
 
-#endif /* end of BPT_H */
+#endif  // BPT_H_

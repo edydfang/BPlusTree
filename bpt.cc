@@ -43,10 +43,10 @@ inline record_t *find(leaf_node_t &node, const key_t &key) {
   return lower_bound(begin(node), end(node), key);
 }
 
-bplus_tree::bplus_tree(const char *p, bool force_empty)
+bplus_tree::bplus_tree(const char *p, bool force_empty, u_int8_t num_key)
     : fp(NULL), fp_level(0) {
   bzero(path, sizeof(path));
-  strcpy(path, p);
+  snprintf(path, sizeof(path), "%s", p);
 
   if (!force_empty)
     // read tree from file; if no meta data, then view it as empty
@@ -56,7 +56,7 @@ bplus_tree::bplus_tree(const char *p, bool force_empty)
     open_file("w+");  // truncate file
 
     // create empty tree if file doesn't exist
-    init_from_empty();
+    init_from_empty(num_key);
     close_file();
   }
 }
@@ -251,7 +251,7 @@ int bplus_tree::update(const key_t &key, value_t value) {
   map(&leaf, offset);
 
   record_t *record = find(leaf, key);
-  if (record != leaf.children + leaf.n)
+  if (record != leaf.children + leaf.n) {
     if (keycmp(key, record->key) == 0) {
       record->value = value;
       unmap(&leaf, offset);
@@ -260,8 +260,9 @@ int bplus_tree::update(const key_t &key, value_t value) {
     } else {
       return 1;
     }
-  else
+  } else {
     return -1;
+  }
 }
 
 void bplus_tree::remove_from_index(off_t offset, internal_node_t &node,
@@ -452,7 +453,7 @@ void bplus_tree::merge_leafs(leaf_node_t *left, leaf_node_t *right) {
 
 void bplus_tree::merge_keys(index_t *where, internal_node_t &node,
                             internal_node_t &next, bool change_where_key) {
-  //(end(node) - 1)->key = where->key;
+  // (end(node) - 1)->key = where->key;
   if (change_where_key) {
     where->key = (end(next) - 1)->key;
   }
@@ -624,12 +625,13 @@ void bplus_tree::node_remove(T *prev, T *node) {
   unmap(&meta, OFFSET_META);
 }
 
-void bplus_tree::init_from_empty() {
+void bplus_tree::init_from_empty(u_int8_t num_key) {
   // init default meta
   bzero(&meta, sizeof(meta_t));
   meta.order = BP_ORDER;
   meta.value_size = sizeof(value_t);
   meta.key_size = sizeof(key_t);
+  meta.num_key = num_key;
   meta.height = 1;
   meta.slot = OFFSET_BLOCK;
 
