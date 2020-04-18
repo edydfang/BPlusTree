@@ -34,10 +34,10 @@ int main(int argc, char *argv[])
     assert(tree.meta.height == 1);
     PRINT("ReReadEmptyTree");
 
-    assert(tree.insert("1993-01-01|1994-01-01|1995-01-01", 1) == 0);
-    assert(tree.insert("1993-01-02|1994-01-02|1995-01-02", 2) == 0);
-    assert(tree.insert("1993-01-03|1994-01-03|1995-01-03", 3) == 0);
-    assert(tree.insert("1993-01-04|1994-01-04|1995-01-04", 4) == 0);
+    assert(tree.insert("1993-01-03|1994-01-03|1995-01-03", 2) == 0);
+    assert(tree.insert("1993-01-04|1994-01-04|1995-01-04", 1) == 0);
+    assert(tree.insert("1993-01-01|1994-01-01|1995-01-01", 4) == 0);
+    assert(tree.insert("1993-01-02|1994-01-02|1995-01-02", 3) == 0);
     }
 
     {
@@ -52,19 +52,19 @@ int main(int argc, char *argv[])
     bpt::leaf_node_t leaf;
     tree.map(&leaf, tree.search_leaf("1993-01-01|1994-01-01|1995-01-01"));
     assert(leaf.n == 4);
-    assert(bpt::keycmp(leaf.children[0].key, "1993-01-01|1994-01-01|1995-01-01") == 0);
-    assert(bpt::keycmp(leaf.children[1].key, "1993-01-02|1994-01-02|1995-01-02") == 0);
-    assert(bpt::keycmp(leaf.children[2].key, "1993-01-03|1994-01-03|1995-01-03") == 0);
-    assert(bpt::keycmp(leaf.children[3].key, "1993-01-04|1994-01-04|1995-01-04") == 0);
+    assert(bpt::keycmp(leaf.children[3].key, leaf.children[2].key) > 0);
+    assert(bpt::keycmp(leaf.children[2].key, leaf.children[1].key) > 0);
+    assert(bpt::keycmp(leaf.children[1].key, leaf.children[0].key) > 0);
+    //assert(bpt::keycmp(leaf.children[0].key, "1993-01-04|1994-01-04|1995-01-04") == 0);
     bpt::value_t value;
     assert(tree.search("1993-01-01|1994-01-01|1995-01-01", &value) == 0);
-    assert(value == 1);
-    assert(tree.search("1993-01-02|1994-01-02|1995-01-02", &value) == 0);
-    assert(value == 2);
-    assert(tree.search("1993-01-03|1994-01-03|1995-01-03", &value) == 0);
-    assert(value == 3);
-    assert(tree.search("1993-01-04|1994-01-04|1995-01-04", &value) == 0);
     assert(value == 4);
+    assert(tree.search("1993-01-02|1994-01-02|1995-01-02", &value) == 0);
+    assert(value == 3);
+    assert(tree.search("1993-01-03|1994-01-03|1995-01-03", &value) == 0);
+    assert(value == 2);
+    assert(tree.search("1993-01-04|1994-01-04|1995-01-04", &value) == 0);
+    assert(value == 1);
     assert(tree.insert("1993-01-01|1994-01-01|1995-01-01", 4) == 1);
     assert(tree.insert("1993-01-02|1994-01-02|1995-01-02", 4) == 1);
     assert(tree.insert("1993-01-03|1994-01-03|1995-01-03", 4) == 1);
