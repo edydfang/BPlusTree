@@ -126,6 +126,7 @@ int bplus_tree::search_range(key_t *left, const key_t &right, value_t *values,
   return i;
 }
 
+
 int bplus_tree::remove(const key_t &key) {
   internal_node_t parent;
   leaf_node_t leaf;
@@ -199,6 +200,7 @@ int bplus_tree::remove(const key_t &key) {
   return 0;
 }
 
+
 int bplus_tree::insert(const key_t &key, value_t value) {
   off_t parent = search_index(key);
   off_t offset = search_leaf(parent, key);
@@ -219,7 +221,8 @@ int bplus_tree::insert(const key_t &key, value_t value) {
     size_t point = leaf.n / 2;
     bool place_right = keycmp(key, leaf.children[point].key) > 0;
     if (place_right) ++point;
-
+    
+    // TODO adjust zone map
     // split
     std::copy(leaf.children + point, leaf.children + leaf.n, new_leaf.children);
     new_leaf.n = leaf.n - point;
@@ -245,6 +248,7 @@ int bplus_tree::insert(const key_t &key, value_t value) {
   return 0;
 }
 
+// TODO adjust zone map
 int bplus_tree::update(const key_t &key, value_t value) {
   off_t offset = search_leaf(key);
   leaf_node_t leaf;
