@@ -6,3 +6,5 @@ bpt_dump_numbers
 bpt_unit_test/*
 bpt_unit_test.dSYM
 .vscode/*
+data/
+data_process
