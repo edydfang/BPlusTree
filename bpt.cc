@@ -715,25 +715,37 @@ void bplus_tree<KEY_TYPE>::init_from_empty() {
   unmap(&root, meta.root_offset);
   unmap(&leaf, root.children[0].child);
 }
+
+template <>
+int bpt::bplus_tree<bpt::vec4_t>::search_range_single(vec4_t *left,
+                                                      const vec4_t &right,
+                                                      value_t *values,
+                                                      size_t max, bool *next,
+                                                      u_int8_t key_idx) const {
+  int return_code = 0;
+  if (key_idx == 0) {
+    // range search
+    return_code =
+        bplus_tree<bpt::vec4_t>::search_range(left, right, values, max, next);
+  } else {
+    // TODO(edydfang) scan all the leaf nodes
+  }
+  return return_code;
+}
+
 template <>
 int bpt::bplus_tree<bpt::vec4_t>::search_single(const vec4_t &key,
                                                 value_t *values, size_t max,
                                                 bool *next,
                                                 u_int8_t key_idx) const {
-  int return_code = 0;
-  if (key_idx == 0) {
-    // range search
-    vec4_t left_first;
-    vec4_t right_first;
-    left_first.k[0] = key.k[0];
-    right_first.k[0] = key.k[0];
-    right_first.k[1] = right_first.k[2] = right_first.k[3] =
-        std::numeric_limits<uint32_t>::max();
-    return_code = bplus_tree<bpt::vec4_t>::search_range(
-        &left_first, right_first, values, max, next);
-  } else {
-    // scan the leaf nodes
-  }
+  vec4_t left_first;
+  vec4_t right_first;
+  left_first.k[0] = key.k[0];
+  right_first.k[0] = key.k[0];
+  right_first.k[1] = right_first.k[2] = right_first.k[3] =
+      std::numeric_limits<uint32_t>::max();
+  int return_code = bplus_tree<bpt::vec4_t>::search_range_single(
+      &left_first, right_first, values, max, next, key_idx);
   return return_code;
 }
 

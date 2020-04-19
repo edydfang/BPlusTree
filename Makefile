@@ -41,6 +41,11 @@ test:
 	./bpt_unit_test
 	./bpt_vec_unit_test
 
+test_vec:
+	@-rm -f bpt_unit_test
+	$(MAKE) TEST="-DUNIT_TEST" bpt_unit_test
+	./bpt_vec_unit_test
+
 gprof:
 	$(MAKE) PROF="-pg"
 
