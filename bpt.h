@@ -77,12 +77,12 @@ class bplus_tree {
   explicit bplus_tree(const char *path, bool force_empty = false);
   /* abstract operations */
   int search(const KEY_TYPE &key, value_t *value) const;
-  int search_single(const KEY_TYPE &key, value_t *value,
-                    u_int8_t key_idx = 0) const;
+  int search_single(const vec4_t &key, value_t *values, size_t max,
+                    bool *next = NULL, u_int8_t key_idx = 0) const;
   int search_range(KEY_TYPE *left, const KEY_TYPE &right, value_t *values,
                    size_t max, bool *next = NULL) const;
-  int search_range_single(KEY_TYPE *left, const KEY_TYPE &right,
-                          value_t *values, size_t max, bool *next = NULL,
+  int search_range_single(vec4_t *left, const vec4_t &right, value_t *values,
+                          size_t max, bool *next = NULL,
                           u_int8_t key_idx = 0) const;
   int remove(const KEY_TYPE &key);
   int insert(const KEY_TYPE &key, value_t value);

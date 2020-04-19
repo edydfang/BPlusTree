@@ -2,6 +2,8 @@
 #include <stdlib.h>
 
 #include <algorithm>
+#include <cstdint>
+#include <limits>
 #include <list>
 using std::binary_search;
 using std::lower_bound;
@@ -72,7 +74,8 @@ inline index_t<KEY_TYPE> *find(internal_node_t<KEY_TYPE> &node,
   return begin(node);
 }
 template <typename KEY_TYPE>
-inline record_t<KEY_TYPE> *find(leaf_node_t<KEY_TYPE> &node, const KEY_TYPE &key) {
+inline record_t<KEY_TYPE> *find(leaf_node_t<KEY_TYPE> &node,
+                                const KEY_TYPE &key) {
   // Returns an iterator pointing to the first element in the
   // range [first,last) which does not compare less than val.
   return lower_bound(begin(node), end(node), key);
@@ -95,6 +98,7 @@ bplus_tree<KEY_TYPE>::bplus_tree(const char *p, bool force_empty)
     close_file();
   }
 }
+
 template <typename KEY_TYPE>
 int bplus_tree<KEY_TYPE>::search(const KEY_TYPE &key, value_t *value) const {
   leaf_node_t<KEY_TYPE> leaf;
@@ -133,14 +137,15 @@ int bplus_tree<KEY_TYPE>::search_range(KEY_TYPE *left, const KEY_TYPE &right,
     else
       b = begin(leaf);
 
-    // copy
+    // set the end pointer of the current leaf node
     e = leaf.children + leaf.n;
+    // copy the values
     for (; b != e && i < max; ++b, ++i) values[i] = b->value;
-
+    // iterate to the next leaf
     off = leaf.next;
   }
 
-  // the last leaf
+  // iterate the last leaf
   if (i < max) {
     map(&leaf, off_right);
 
@@ -152,13 +157,15 @@ int bplus_tree<KEY_TYPE>::search_range(KEY_TYPE *left, const KEY_TYPE &right,
   // mark for next iteration
   if (next != NULL) {
     if (i == max && b != e) {
+      // end due to the limitaion of value arr size
       *next = true;
       *left = b->key;
     } else {
+      // all the result is returned
       *next = false;
     }
   }
-
+  // the size of the result
   return i;
 }
 template <typename KEY_TYPE>
@@ -234,6 +241,7 @@ int bplus_tree<KEY_TYPE>::remove(const KEY_TYPE &key) {
 
   return 0;
 }
+
 template <typename KEY_TYPE>
 int bplus_tree<KEY_TYPE>::insert(const KEY_TYPE &key, value_t value) {
   off_t parent = search_index(key);
@@ -627,7 +635,10 @@ off_t bplus_tree<KEY_TYPE>::search_index(const KEY_TYPE &key) const {
   while (height > 1) {
     internal_node_t<KEY_TYPE> node;
     map(&node, org);
-
+    // find the index that is strictly greater than the key
+    // why end(node) - 1? we don't care the key of last index, if key is
+    // greater than all prior indexes, the last index [end(node)-1] is
+    // returned
     index_t<KEY_TYPE> *i = upper_bound(begin(node), end(node) - 1, key);
     org = i->child;
     --height;
@@ -703,6 +714,27 @@ void bplus_tree<KEY_TYPE>::init_from_empty() {
   unmap(&meta, OFFSET_META);
   unmap(&root, meta.root_offset);
   unmap(&leaf, root.children[0].child);
+}
+template <>
+int bpt::bplus_tree<bpt::vec4_t>::search_single(const vec4_t &key,
+                                                value_t *values, size_t max,
+                                                bool *next,
+                                                u_int8_t key_idx) const {
+  int return_code = 0;
+  if (key_idx == 0) {
+    // range search
+    vec4_t left_first;
+    vec4_t right_first;
+    left_first.k[0] = key.k[0];
+    right_first.k[0] = key.k[0];
+    right_first.k[1] = right_first.k[2] = right_first.k[3] =
+        std::numeric_limits<uint32_t>::max();
+    return_code = bplus_tree<bpt::vec4_t>::search_range(
+        &left_first, right_first, values, max, next);
+  } else {
+    // scan the leaf nodes
+  }
+  return return_code;
 }
 
 // Explicitly instantiate the template, and its member definitions

@@ -38,7 +38,8 @@ inline int keycmp(const vec4_t &a, const vec4_t &b) {
     if (a.k[i] == b.k[i]) {
       continue;
     } else {
-      return a.k[i] - b.k[i];
+      // note the bug when comparing two uint32
+      return a.k[i] > b.k[i] ? 1 : -1;
     }
   }
   return 0;

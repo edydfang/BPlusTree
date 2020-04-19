@@ -16,6 +16,7 @@
 #include <util/benchmark_utils.h>
 
 #include <algorithm>
+
 using bpt::bplus_tree;
 using bpt::vec4_t;
 
@@ -46,7 +47,6 @@ int main(int argc, char *argv[]) {
     assert(INSERT("1993-01-02|1994-01-02|1995-01-02", 3) == 0);
   }
 
-
   {
     bplus_tree<bpt::vec4_t> tree_vec4("test_vec4.db");
     assert(tree_vec4.meta.order == 4);
@@ -76,6 +76,30 @@ int main(int argc, char *argv[]) {
     assert(INSERT("1993-01-03|1994-01-03|1995-01-03", 2) == 1);
     assert(INSERT("1993-01-04|1994-01-04|1995-01-04", 1) == 1);
     PRINT("Insert4Elements");
+  }
+
+  {
+    bplus_tree<bpt::vec4_t> tree_vec4("test_vec4.db");
+    bpt::value_t values[SIZE];
+    int rid = 5;
+    // insert
+    for (; rid < 10; rid++) {
+      char date_str[33];
+      snprintf(date_str, sizeof(date_str), "1993-01-02|1994-01-%02d|1995-01-02",
+               rid);
+      assert(INSERT(date_str, rid) == 0);
+    }
+    for (; rid < 15; rid++) {
+      char date_str[33];
+      snprintf(date_str, sizeof(date_str), "1993-01-03|1994-01-%02d|1995-01-02",
+               rid);
+      assert(INSERT(date_str, rid) == 0);
+    }
+    // only the first column should matter
+    bpt::vec4_t single_key(
+        date2keyarr("1993-01-02|1994-01-10|1995-01-02", 100));
+    int return_num = tree_vec4.search_single(single_key, values, SIZE);
+    printf("%d\n", return_num);
   }
 
   unlink("test_vec4.db");
