@@ -39,6 +39,7 @@ test:
 	@-rm -f bpt_unit_test
 	$(MAKE) TEST="-DUNIT_TEST" bpt_unit_test
 	./bpt_unit_test
+	./bpt_vec_unit_test
 
 gprof:
 	$(MAKE) PROF="-pg"
@@ -62,7 +63,8 @@ bpt_cli: $(OBJ)
 	$(QUIET_LINK)$(CXX) -o $(PRGNAME) $(CCOPT) $(DEBUG) $(OBJ) $(CCLINK)
 
 bpt_unit_test:
-	$(QUIET_LINK)$(CXX) -o bpt_unit_test $(INCLUDE) $(CCOPT) $(DEBUG) util/unit_test.cc bpt.cc util/benchmark_utils.cc $(TEST) $(CCLINK) 
+	$(QUIET_LINK)$(CXX) -o bpt_unit_test $(INCLUDE) $(CCOPT) $(DEBUG) util/unit_test.cc bpt.cc util/benchmark_utils.cc $(TEST) $(CCLINK)
+	$(QUIET_LINK)$(CXX) -o bpt_vec_unit_test $(INCLUDE) $(CCOPT) $(DEBUG) util/unit_test_vec.cc bpt.cc util/benchmark_utils.cc $(TEST) $(CCLINK)  
 
 bpt_dump_numbers: $(DUMP_OBJ)
 	$(QUIET_LINK)$(CXX) -o $(DUMPPRGNAME) $(CCOPT) $(DEBUG) $(DUMP_OBJ) $(CCLINK)

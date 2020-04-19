@@ -56,8 +56,7 @@ struct strkey_t {
 };
 
 inline int keycmp(const strkey_t &a, const strkey_t &b) {
-  int x = strlen(a.k) - strlen(b.k);
-  return x == 0 ? strcmp(a.k, b.k) : x;
+  return strcmp(a.k, b.k);
 }
 
 #define OPERATOR_KEYCMP(type)                      \
