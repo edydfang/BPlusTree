@@ -23,6 +23,6 @@ vector<uint32_t> date2keyarr(const char* date_str, uint32_t record_id) {
   return comp_key;
 }
 
-bpt::key_t data2key(const char* date_str, uint32_t record_id) {
-  return bpt::key_t(date2keyarr(date_str, record_id));
+bpt::vec4_t data2key(const char* date_str, uint32_t record_id) {
+  return bpt::vec4_t(date2keyarr(date_str, record_id));
 }

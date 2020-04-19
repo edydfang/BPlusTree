@@ -2,9 +2,9 @@
 #define PREDEFINED_H_
 
 #include <string.h>
+
 #include <cstdint>
 #include <vector>
-
 
 namespace bpt {
 
@@ -17,14 +17,15 @@ namespace bpt {
 
 /* key/value type */
 typedef int value_t;
-struct key_t {
+struct vec4_t {
   uint32_t k[4];
-  explicit key_t(const std::vector<uint32_t> key_arr) {
+  static const uint8_t num_key = 4;
+  explicit vec4_t(const std::vector<uint32_t> key_arr) {
     for (size_t i = 0; i < 4; i++) {
       k[i] = key_arr[i];
     }
   }
-  key_t() {
+  vec4_t() {
     for (size_t i = 0; i < 4; i++) {
       k[i] = 0;
     }
@@ -32,7 +33,7 @@ struct key_t {
   operator bool() const { return k[0] || k[1] || k[2] || k[3]; }
 };
 
-inline int keycmp(const key_t &a, const key_t &b) {
+inline int keycmp(const vec4_t &a, const vec4_t &b) {
   for (int i = 0; i < 4; i++) {
     if (a.k[i] == b.k[i]) {
       continue;
@@ -41,6 +42,22 @@ inline int keycmp(const key_t &a, const key_t &b) {
     }
   }
   return 0;
+}
+
+struct strkey_t {
+  char k[16];
+  static const uint8_t num_key = 1;
+  explicit strkey_t(const char *str = "") {
+    bzero(k, sizeof(k));
+    strcpy(k, str);
+  }
+
+  operator bool() const { return strcmp(k, ""); }
+};
+
+inline int keycmp(const strkey_t &a, const strkey_t &b) {
+  int x = strlen(a.k) - strlen(b.k);
+  return x == 0 ? strcmp(a.k, b.k) : x;
 }
 
 #define OPERATOR_KEYCMP(type)                      \

@@ -8,21 +8,32 @@
 #define PRINT(a) \
   fprintf(stderr, "\033[33m%s\033[0m \033[32m%s\033[0m\n", a, "Passed")
 #define INSERT(key, rid, val) \
-  tree.insert(bpt::key_t(date2keyarr(key, rid)), val)
+  tree_vec4.insert(bpt::vec4_t(date2keyarr(key, rid)), val)
 #define SIZE 128
 #include <bpt.h>
 #include <util/benchmark_utils.h>
 #include <algorithm>
 using bpt::bplus_tree;
-using bpt::key_t;
+using bpt::vec4_t;
 
 int main(int argc, char *argv[]) {
 
   {
-    bplus_tree tree("test.db", true);
+    bplus_tree<bpt::vec4_t> tree_vec4("test_vec4.db", true);
+    assert(tree_vec4.meta.order == 4);
+    assert(tree_vec4.meta.value_size == sizeof(bpt::value_t));
+    assert(tree_vec4.meta.key_size == sizeof(bpt::vec4_t));
+    assert(tree_vec4.meta.internal_node_num == 1);
+    assert(tree_vec4.meta.leaf_node_num == 1);
+    assert(tree_vec4.meta.height == 1);
+    PRINT("EmptyTree");
+  }
+
+  {
+    bplus_tree<bpt::strkey_t> tree("test.db", true);
     assert(tree.meta.order == 4);
     assert(tree.meta.value_size == sizeof(bpt::value_t));
-    assert(tree.meta.key_size == sizeof(bpt::key_t));
+    assert(tree.meta.key_size == sizeof(bpt::strkey_t));
     assert(tree.meta.internal_node_num == 1);
     assert(tree.meta.leaf_node_num == 1);
     assert(tree.meta.height == 1);
@@ -30,23 +41,35 @@ int main(int argc, char *argv[]) {
   }
 
   {
-    bplus_tree tree("test.db");
-    assert(tree.meta.order == 4);
-    assert(tree.meta.value_size == sizeof(bpt::value_t));
-    assert(tree.meta.key_size == sizeof(bpt::key_t));
-    assert(tree.meta.internal_node_num == 1);
-    assert(tree.meta.leaf_node_num == 1);
-    assert(tree.meta.height == 1);
+    bplus_tree<bpt::vec4_t> tree_vec4("test_vec4.db");
+    assert(tree_vec4.meta.order == 4);
+    assert(tree_vec4.meta.value_size == sizeof(bpt::value_t));
+    assert(tree_vec4.meta.key_size == sizeof(bpt::vec4_t));
+    assert(tree_vec4.meta.internal_node_num == 1);
+    assert(tree_vec4.meta.leaf_node_num == 1);
+    assert(tree_vec4.meta.height == 1);
     PRINT("ReReadEmptyTree");
     assert(INSERT("1993-01-03|1994-01-03|1995-01-03", 2, 2) == 0);
     assert(INSERT("1993-01-04|1994-01-04|1995-01-04", 1, 1) == 0);
     assert(INSERT("1993-01-01|1994-01-01|1995-01-01", 4, 4) == 0);
     assert(INSERT("1993-01-02|1994-01-02|1995-01-02", 3, 3) == 0);
 
-    // assert(tree.insert("t2", 2) == 0);
-    // assert(tree.insert("t4", 4) == 0);
-    // assert(tree.insert("t1", 1) == 0);
-    // assert(tree.insert("t3", 3) == 0);
+
+  }
+
+  {
+    bplus_tree<bpt::strkey_t> tree("test.db");
+    assert(tree.meta.order == 4);
+    assert(tree.meta.value_size == sizeof(bpt::value_t));
+    assert(tree.meta.key_size == sizeof(bpt::vec4_t));
+    assert(tree.meta.internal_node_num == 1);
+    assert(tree.meta.leaf_node_num == 1);
+    assert(tree.meta.height == 1);
+    PRINT("ReReadEmptyTree");
+    assert(tree.insert(bpt::strkey_t("t2"), 2) == 0);
+    assert(tree.insert(bpt::strkey_t("t4"), 4) == 0);
+    assert(tree.insert(bpt::strkey_t("t1"), 1) == 0);
+    assert(tree.insert(bpt::strkey_t("t3F"), 3) == 0);
   }
 
   /*
