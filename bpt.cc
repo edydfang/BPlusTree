@@ -728,7 +728,42 @@ int bpt::bplus_tree<bpt::vec4_t>::search_range_single(vec4_t *left,
     return_code =
         bplus_tree<bpt::vec4_t>::search_range(left, right, values, max, next);
   } else {
-    // TODO(edydfang) scan all the leaf nodes
+    // scan all the leaf nodes
+    if (left == NULL || keycmp(*left, right) > 0) return -1;
+    size_t count = 0;
+    off_t off = meta.leaf_offset;
+    record_t<bpt::vec4_t> *b, *e;
+
+    leaf_node_t<bpt::vec4_t> leaf;
+    while (off != 0 && count < max) {
+      map(&leaf, off);
+      b = begin(leaf);
+      // set the end pointer of the current leaf node
+      e = leaf.children + leaf.n;
+      // copy the values
+      for (; b != e && count < max; ++b){
+        if(b->key.k[key_idx] >= (*left).k[key_idx] && 
+           b->key.k[key_idx] < right.k[key_idx]){
+          values[count++] = b->value;
+        }
+      } 
+      // iterate to the next leaf
+      off = leaf.next;
+    }
+
+    // mark for next iteration
+    if (next != NULL) {
+      if (count == max && off != 0) {
+        // end due to the limitation of value arr size
+        *next = true;
+        *left = b->key;
+      } else {
+        // all the result is returned
+        *next = false;
+      }
+    }
+    // the size of the result
+    return_code = count;
   }
   return return_code;
 }

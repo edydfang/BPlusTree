@@ -103,6 +103,47 @@ int main(int argc, char *argv[]) {
     PRINT("SearchFirstColumnIndex");
   }
 
+  {
+    bplus_tree<bpt::vec4_t> tree_vec4("test_vec4.db");
+    bpt::value_t values[SIZE];
+    bool next;
+    bpt::vec4_t left_key(
+        date2keyarr("1993-01-02|1990-01-01|1995-01-01", 5));
+    bpt::vec4_t right_key(
+        date2keyarr("1993-01-02|1999-01-01|1995-01-03", 15));
+    int return_num;
+    //test for second column
+    //at this time, left is 1990-01-01 and right is 1999-01-01(including all)
+    return_num = 
+        tree_vec4.search_range_single(&left_key,right_key, 
+                                      values, SIZE, &next, 1);
+    assert(return_num == 14);
+    assert(next == false);
+    PRINT("SearchSecondColumnIndex");
+
+    //test for third column
+    //left is 1995-01-01 and right is 1995-01-03, limit size by 3
+    return_num = 
+        tree_vec4.search_range_single(&left_key,right_key, 
+                                      values, 3, &next, 2);
+    assert(return_num == 3);
+    assert(next == true);
+    bpt::vec4_t target_key(
+        date2keyarr("1993-01-02|1994-01-06|1995-01-02", 6));
+    assert(left_key == target_key);
+    PRINT("SearchThirdColumnIndex");
+
+    //test for fourth column
+    //at this time, left is 6 and right is 15
+    return_num = 
+        tree_vec4.search_range_single(&left_key,right_key, 
+                                      values, SIZE, &next, 3);
+    //printf("%d", return_num);
+    assert(return_num == 9);
+    assert(next == false);
+    PRINT("SearchFourthColumnIndex");
+  }
+
   unlink("test_vec4.db");
 
   return 0;
