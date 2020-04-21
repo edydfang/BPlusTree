@@ -3,6 +3,7 @@
 #define UTIL_BENCHMARK_UTILS_H_
 #include <vector>
 #include <cstdint>
+#include "../predefined.h"
 
 using std::vector;
 

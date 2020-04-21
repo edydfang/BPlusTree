@@ -12,17 +12,17 @@
 #define SEARCH_VAL(key, rid) \
   tree_vec4.search(bpt::vec4_t(date2keyarr(key, rid)), &value)
 #define SIZE 128
-#include <bpt.h>
 #include <util/benchmark_utils.h>
+#include <zbpt.h>
 
 #include <algorithm>
 
-using bpt::bplus_tree;
+using bpt::bplus_tree_zmap;
 using bpt::vec4_t;
 
 int main(int argc, char *argv[]) {
   {
-    bplus_tree<bpt::vec4_t> tree_vec4("test_vec4.db", true);
+    bplus_tree_zmap tree_vec4("test_zm.db", true);
     assert(tree_vec4.meta.order == 4);
     assert(tree_vec4.meta.value_size == sizeof(bpt::value_t));
     assert(tree_vec4.meta.key_size == sizeof(bpt::vec4_t));
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
   }
 
   {
-    bplus_tree<bpt::vec4_t> tree_vec4("test_vec4.db");
+    bplus_tree_zmap tree_vec4("test_zm.db");
     assert(tree_vec4.meta.order == 4);
     assert(tree_vec4.meta.value_size == sizeof(bpt::value_t));
     assert(tree_vec4.meta.key_size == sizeof(bpt::vec4_t));
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
   }
 
   {
-    bplus_tree<bpt::vec4_t> tree_vec4("test_vec4.db");
+    bplus_tree_zmap tree_vec4("test_zm.db");
     assert(tree_vec4.meta.order == 4);
     assert(tree_vec4.meta.value_size == sizeof(bpt::value_t));
     assert(tree_vec4.meta.key_size == sizeof(bpt::vec4_t));
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
   }
 
   {
-    bplus_tree<bpt::vec4_t> tree_vec4("test_vec4.db");
+    bplus_tree_zmap tree_vec4("test_zm.db");
     bpt::value_t values[SIZE];
     int rid = 5;
     // insert
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
   }
 
   {
-    bplus_tree<bpt::vec4_t> tree_vec4("test_vec4.db");
+    bplus_tree_zmap tree_vec4("test_zm.db");
     bpt::value_t values[SIZE];
     bool next;
     bpt::vec4_t left_key(date2keyarr("1993-01-02|1990-01-01|1995-01-01", 5));
@@ -138,7 +138,7 @@ int main(int argc, char *argv[]) {
     PRINT("SearchFourthColumnIndex");
   }
 
-  unlink("test_vec4.db");
+  unlink("test_zm.db");
 
   return 0;
 }

@@ -70,6 +70,16 @@ struct leaf_node_t {
   record_t<KEY_TYPE> children[BP_ORDER];
 };
 
+/* helper iterating function */
+template <class T>
+inline typename T::child_t begin(T &node) {
+  return node.children;
+}
+template <class T>
+inline typename T::child_t end(T &node) {
+  return node.children + node.n;
+}
+
 /* the encapulated B+ tree */
 template <typename KEY_TYPE>
 class bplus_tree {
@@ -221,6 +231,24 @@ class bplus_tree {
     return unmap(block, offset, sizeof(T));
   }
 };
+
+template <template<class> class NODE_TYPE, class KEY_TYPE>
+bool operator<(const KEY_TYPE &l, const NODE_TYPE<KEY_TYPE> &r) {
+  return keycmp(l, r.key) < 0;
+}
+
+template <template<class> class NODE_TYPE, class KEY_TYPE>
+bool operator<(const NODE_TYPE<KEY_TYPE> &l, const KEY_TYPE &r) {
+  return keycmp(l.key, r) < 0;
+}
+template <template<class> class NODE_TYPE, class KEY_TYPE>
+bool operator==(const KEY_TYPE &l, const NODE_TYPE<KEY_TYPE> &r) {
+  return keycmp(l, r.key) == 0;
+}
+template <template<class> class NODE_TYPE, class KEY_TYPE>
+bool operator==(const NODE_TYPE<KEY_TYPE> &l, const KEY_TYPE &r) {
+  return keycmp(l.key, r) == 0;
+}
 
 }  // namespace bpt
 

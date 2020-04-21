@@ -1,9 +1,11 @@
 // Copyright [2020] <Copyright Owner>  [legal/copyright]
-#include <predefined.h>
+#include "./benchmark_utils.h"
+
 #include <string.h>
-#include <util/benchmark_utils.h>
 
 #include <cstdio>
+
+#include "../predefined.h"
 
 vector<uint32_t> date2keyarr(const char* date_str, uint32_t record_id) {
   // 0:commit date 1:ship date 2:receipt date in one int:
