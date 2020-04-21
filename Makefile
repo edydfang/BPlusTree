@@ -23,7 +23,7 @@ endif
 
 TESTPRGNAME = bpt_unit_test
 
-OBJ = bpt.o util/cli.o util/benchmark_utils.o
+OBJ = bpt.o util/benchmark_utils.o zbpt.o
 PRGNAME = bpt_cli
 
 DUMP_OBJ = bpt.o util/dump_numbers.o
@@ -46,10 +46,14 @@ test:
 	./bpt_vec_unit_test
 
 test_vec:
-	@-rm -f bpt_unit_test
+	@-rm -f bpt_vec_unit_test
 	$(MAKE) TEST="-DUNIT_TEST" bpt_unit_test
 	./bpt_vec_unit_test
 
+test_zm:
+	@-rm -f zbpt_unit_test
+	$(MAKE) TEST="-DUNIT_TEST" zbpt_unit_test
+	./zbpt_unit_test
 gprof:
 	$(MAKE) PROF="-pg"
 
@@ -68,7 +72,7 @@ distclean: clean
 dep:
 	$(CC) -MM *.cc
 
-bpt_cli: $(OBJ)
+bpt_cli: $(OBJ) util/cli.o
 	$(QUIET_LINK)$(CXX) -o $(PRGNAME) $(CCOPT) $(DEBUG) $(OBJ) $(CCLINK)
 
 bpt_unit_test:
@@ -81,11 +85,16 @@ bpt_dump_numbers: $(DUMP_OBJ)
 bench_unit_test: ./util/benchmark_utils_test.cc
 	$(QUIET_LINK)$(CXX) -o bench_unit_test $(DEBUG) util/benchmark_utils_test.cc util/benchmark_utils.cc $(TEST) $(CCLINK) 
 
+zbpt_unit_test: $(OBJ) util/unit_test_zvec.cc
+	$(QUIET_LINK)$(CXX) -o zbpt_unit_test $(INCLUDE) $(CCOPT) $(DEBUG) util/unit_test_zvec.cc $(OBJ) $(TEST) $(CCLINK)
+
+
 %.o: %.cc
 	$(QUIET_CC)$(CXX) -o $@ -c $(CFLAGS) $(TEST) $(DEBUG) $(COMPILE_TIME) $<
 
 # Deps (use make dep to generate this)
 bpt.o: bpt.cc bpt.h predefined.h
+zbpt.o: zbpt.cc zbpt.h
 cli.o: cli.cc bpt.h predefined.h
 dump_numbers.o: dump_numbers.cc bpt.h predefined.h
 unit_test.o: unit_test.cc bpt.h predefined.h

@@ -1,4 +1,4 @@
-#include <bpt.h>
+#include "bpt.h"
 #include <stdlib.h>
 
 #include <algorithm>
@@ -11,53 +11,6 @@ using std::swap;
 using std::upper_bound;
 
 namespace bpt {
-
-/* custom compare operator for STL algorithms */
-// OPERATOR_KEYCMP(index_t<KEY_TYPE>)
-// OPERATOR_KEYCMP(record_t<KEY_TYPE>)
-template <typename KEY_TYPE>
-bool operator<(const KEY_TYPE &l, const index_t<KEY_TYPE> &r) {
-  return keycmp(l, r.key) < 0;
-}
-template <typename KEY_TYPE>
-bool operator<(const index_t<KEY_TYPE> &l, const KEY_TYPE &r) {
-  return keycmp(l.key, r) < 0;
-}
-template <typename KEY_TYPE>
-bool operator==(const KEY_TYPE &l, const index_t<KEY_TYPE> &r) {
-  return keycmp(l, r.key) == 0;
-}
-template <typename KEY_TYPE>
-bool operator==(const index_t<KEY_TYPE> &l, const KEY_TYPE &r) {
-  return keycmp(l.key, r) == 0;
-}
-// for record_t
-template <typename KEY_TYPE>
-bool operator<(const KEY_TYPE &l, const record_t<KEY_TYPE> &r) {
-  return keycmp(l, r.key) < 0;
-}
-template <typename KEY_TYPE>
-bool operator<(const record_t<KEY_TYPE> &l, const KEY_TYPE &r) {
-  return keycmp(l.key, r) < 0;
-}
-template <typename KEY_TYPE>
-bool operator==(const KEY_TYPE &l, const record_t<KEY_TYPE> &r) {
-  return keycmp(l, r.key) == 0;
-}
-template <typename KEY_TYPE>
-bool operator==(const record_t<KEY_TYPE> &l, const KEY_TYPE &r) {
-  return keycmp(l.key, r) == 0;
-}
-
-/* helper iterating function */
-template <class T>
-inline typename T::child_t begin(T &node) {
-  return node.children;
-}
-template <class T>
-inline typename T::child_t end(T &node) {
-  return node.children + node.n;
-}
 
 /* helper searching function */
 template <typename KEY_TYPE>
@@ -76,6 +29,7 @@ inline index_t<KEY_TYPE> *find(internal_node_t<KEY_TYPE> &node,
 template <typename KEY_TYPE>
 inline record_t<KEY_TYPE> *find(leaf_node_t<KEY_TYPE> &node,
                                 const KEY_TYPE &key) {
+  // lower_bound
   // Returns an iterator pointing to the first element in the
   // range [first,last) which does not compare less than val.
   return lower_bound(begin(node), end(node), key);
