@@ -6,7 +6,7 @@
 
 int main(int args, char **argv) {
   std::ifstream fin("data/lineitem.txt", std::ios::in);
-  std::ofstream ofresult("data/result.txt ", std::ios::trunc | std::ios::out);
+  std::ofstream ofresult("data/result.txt", std::ios::trunc | std::ios::out);
 
   char line[1024] = {0};
   char tmp[33] = {0};
@@ -20,7 +20,7 @@ int main(int args, char **argv) {
       index++;
     }
     strncpy(tmp, line + index, 32);
-    ofresult << tmp << std::endl;
+    ofresult << tmp << '\n';
   }
   fin.clear();
   fin.close();
