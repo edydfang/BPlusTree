@@ -29,6 +29,9 @@ void load_db(bt& db) {
         //cout << line << std::endl;
         assert(db.insert(bpt::vec4_t(date2keyarr(line, i)), i) == 0);
         i++;
+        if (i % 10000 == 0) {
+            printf("Finished %d insertion.\n", i);
+        }
     }
     fin.clear();
     fin.close();
@@ -114,10 +117,12 @@ int main(int argc, char** argv) {
     high_resolution_clock::time_point end;
     duration<double, std::milli> duration_sec;
 
+    printf("Begin load!\n");
     bt tree_vec4("test_vec4.db", true);
     load_db(tree_vec4);
     bpt::value_t* values = new bpt::value_t[SIZE];
 
+    printf("Begin test!\n");
     int range[7] = {1, 2, 4, 8, 16, 30, 60};
     for (u_int8_t i = 0; i < 4; i++) {
         for (int j = 0; j < 7; j++) {
