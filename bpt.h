@@ -88,8 +88,8 @@ class bplus_tree {
   explicit bplus_tree(const char *path, bool force_empty = false);
   /* abstract operations */
   int search(const KEY_TYPE &key, value_t *value) const;
-  int search_single(const vec4_t &key, value_t *values, size_t max,
-                    bool *next = NULL, u_int8_t key_idx = 0) const;
+  int search_single(vec4_t &key, value_t *values, size_t max, bool *next = NULL,
+                    u_int8_t key_idx = 0) const;
   int search_range(KEY_TYPE *left, const KEY_TYPE &right, value_t *values,
                    size_t max, bool *next = NULL) const;
   int search_range_single(vec4_t *left, const vec4_t &right, value_t *values,
@@ -233,20 +233,20 @@ class bplus_tree {
   }
 };
 
-template <template<class> class NODE_TYPE, class KEY_TYPE>
+template <template <class> class NODE_TYPE, class KEY_TYPE>
 bool operator<(const KEY_TYPE &l, const NODE_TYPE<KEY_TYPE> &r) {
   return keycmp(l, r.key) < 0;
 }
 
-template <template<class> class NODE_TYPE, class KEY_TYPE>
+template <template <class> class NODE_TYPE, class KEY_TYPE>
 bool operator<(const NODE_TYPE<KEY_TYPE> &l, const KEY_TYPE &r) {
   return keycmp(l.key, r) < 0;
 }
-template <template<class> class NODE_TYPE, class KEY_TYPE>
+template <template <class> class NODE_TYPE, class KEY_TYPE>
 bool operator==(const KEY_TYPE &l, const NODE_TYPE<KEY_TYPE> &r) {
   return keycmp(l, r.key) == 0;
 }
-template <template<class> class NODE_TYPE, class KEY_TYPE>
+template <template <class> class NODE_TYPE, class KEY_TYPE>
 bool operator==(const NODE_TYPE<KEY_TYPE> &l, const KEY_TYPE &r) {
   return keycmp(l.key, r) == 0;
 }
