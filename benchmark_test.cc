@@ -22,12 +22,9 @@ typedef bpt::bplus_tree<bpt::vec4_t> bt;
 typedef bpt::vec4_t key;
 
 void load_db(bt& db) {
-    std::ifstream fin("data/test.txt", std::ios::in);
-    cout << "begin load!" << std::endl;
+    std::ifstream fin("data/result.txt", std::ios_base::binary);
     uint32_t i = 0;
-    cout << "begin load!" << std::endl;
     char line[1024] = {0};
-    cout << "begin load!" << std::endl;
     while (fin.getline(line, sizeof(line))) {
         cout << line << std::endl;
         assert(db.insert(bpt::vec4_t(date2keyarr(line, i)), i) == 0);
