@@ -1,4 +1,5 @@
 #include "bpt.h"
+
 #include <stdlib.h>
 
 #include <algorithm>
@@ -695,12 +696,12 @@ int bpt::bplus_tree<bpt::vec4_t>::search_range_single(vec4_t *left,
       // set the end pointer of the current leaf node
       e = leaf.children + leaf.n;
       // copy the values
-      for (; b != e && count < max; ++b){
-        if(b->key.k[key_idx] >= (*left).k[key_idx] && 
-           b->key.k[key_idx] < right.k[key_idx]){
+      for (; b != e && count < max; ++b) {
+        if (b->key.k[key_idx] >= (*left).k[key_idx] &&
+            b->key.k[key_idx] < right.k[key_idx]) {
           values[count++] = b->value;
         }
-      } 
+      }
       // iterate to the next leaf
       off = leaf.next;
     }
@@ -722,19 +723,28 @@ int bpt::bplus_tree<bpt::vec4_t>::search_range_single(vec4_t *left,
   return return_code;
 }
 
+// search for a singe value for some single column
 template <>
 int bpt::bplus_tree<bpt::vec4_t>::search_single(const vec4_t &key,
                                                 value_t *values, size_t max,
                                                 bool *next,
                                                 u_int8_t key_idx) const {
-  vec4_t left_first;
-  vec4_t right_first;
-  left_first.k[0] = key.k[0];
-  right_first.k[0] = key.k[0];
-  right_first.k[1] = right_first.k[2] = right_first.k[3] =
-      std::numeric_limits<uint32_t>::max();
+  if (key_idx > 3) {
+    return -1;
+  }
+  vec4_t left_most;
+  vec4_t right_most;
+  left_most.k[key_idx] = key.k[key_idx];
+  right_most.k[key_idx] = key.k[key_idx];
+  // if it is the first column
+  // we have to set all the reamining column to max for right_most
+  if (key_idx == 0) {
+    right_most.k[1] = right_most.k[2] = right_most.k[3] =
+        std::numeric_limits<uint32_t>::max();
+  }
+
   int return_code = bplus_tree<bpt::vec4_t>::search_range_single(
-      &left_first, right_first, values, max, next, key_idx);
+      &left_most, right_most, values, max, next, key_idx);
   return return_code;
 }
 

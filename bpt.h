@@ -75,6 +75,7 @@ template <class T>
 inline typename T::child_t begin(T &node) {
   return node.children;
 }
+
 template <class T>
 inline typename T::child_t end(T &node) {
   return node.children + node.n;
