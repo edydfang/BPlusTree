@@ -20,7 +20,7 @@ int main(int args, char **argv) {
       index++;
     }
     strncpy(tmp, line + index, 32);
-    ofresult << tmp << std::endl;
+    ofresult << tmp << '\n';
   }
   fin.clear();
   fin.close();

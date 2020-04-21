@@ -35,6 +35,10 @@ process:
 	$(CXX) util/data_process.cpp -o data_process
 	./data_process
 
+benchmark:
+	$(QUIET_LINK)$(CXX) -o benchmark_test $(INCLUDE) $(CCOPT) $(DEBUG) benchmark_test.cc bpt.cc util/benchmark_utils.cc $(TEST) $(CCLINK)
+	./benchmark_test
+
 test:
 	@-rm -f bpt_unit_test
 	$(MAKE) TEST="-DUNIT_TEST" bpt_unit_test
@@ -56,7 +60,7 @@ noopt:
 	$(MAKE) OPTIMIZATION=""
 
 clean:
-	rm -rf $(PRGNAME) $(TESTPRGNAME) $(DUMPPRGNAME) $(CHECKDUMPPRGNAME) $(CHECKAOFPRGNAME) *.o *.gcda *.gcno *.gcov util/*.o data_process
+	rm -rf $(PRGNAME) $(TESTPRGNAME) $(DUMPPRGNAME) $(CHECKDUMPPRGNAME) $(CHECKAOFPRGNAME) *.o *.gcda *.gcno *.gcov util/*.o data_process benchmark_test
 
 distclean: clean
 	$(MAKE) clean
