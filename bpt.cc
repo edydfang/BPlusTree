@@ -708,7 +708,7 @@ int bpt::bplus_tree<bpt::vec4_t>::search_range_single(vec4_t *left,
 
     // mark for next iteration
     if (next != NULL) {
-      if (count == max && off != 0) {
+      if (count >= max && off != 0) {
         // end due to the limitation of value arr size
         *next = true;
         *left = b->key;

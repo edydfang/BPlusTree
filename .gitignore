@@ -11,3 +11,4 @@ bpt_unit_test.dSYM
 .vscode/*
 data/
 data_process
+benchmark_test.dSYM/

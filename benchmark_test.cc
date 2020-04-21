@@ -22,7 +22,7 @@ typedef bpt::bplus_tree<bpt::vec4_t> bt;
 typedef bpt::vec4_t key;
 
 void load_db(bt& db) {
-    std::ifstream fin("data/result.txt", std::ios_base::binary);
+    std::ifstream fin("data/test.txt", std::ios_base::binary);
     uint32_t i = 0;
     char line[1024] = {0};
     while (fin.getline(line, sizeof(line))) {
@@ -41,11 +41,10 @@ int test(bt db, u_int8_t key_idx, int range, bpt::value_t* values) {
     switch (range) {
         case 1: {
             key l_key = KEY("1993-12-04|1994-01-07|1994-01-01", 0);
-            key r_key = KEY("1993-12-05|1994-01-08|1994-01-02", 1);
-            ;
+            // key r_key = KEY("1993-12-05|1994-01-08|1994-01-02", 1);
             while (next) {
-                return_num += db.search_range_single(&l_key, r_key, values,
-                                                     SIZE, &next, key_idx);
+                return_num +=
+                    db.search_single(l_key, values, SIZE, &next, key_idx);
             }
             return return_num;
         }
@@ -115,13 +114,10 @@ int main(int argc, char** argv) {
     high_resolution_clock::time_point end;
     duration<double, std::milli> duration_sec;
 
-    cout << "begin load" << std::endl;
     bt tree_vec4("test_vec4.db", true);
-    cout << "begin load" << std::endl;
     load_db(tree_vec4);
     bpt::value_t* values = new bpt::value_t[SIZE];
 
-    cout << "begin test" << std::endl;
     int range[7] = {1, 2, 4, 8, 16, 30, 60};
     for (u_int8_t i = 0; i < 4; i++) {
         for (int j = 0; j < 7; j++) {
