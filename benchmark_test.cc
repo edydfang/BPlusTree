@@ -22,7 +22,7 @@ typedef bpt::bplus_tree<bpt::vec4_t> bt;
 typedef bpt::vec4_t key;
 
 void load_db(bt& db) {
-    std::ifstream fin("data/test.txt", std::ios_base::binary);
+    std::ifstream fin("data/result.txt", std::ios_base::binary);
     uint32_t i = 0;
     char line[1024] = {0};
     while (fin.getline(line, sizeof(line))) {
@@ -140,9 +140,9 @@ int main(int argc, char** argv) {
                     end - start);
             // Durations are converted to milliseconds already thanks to
             // std::chrono::duration_cast
-            cout << "key_idx = " << i << " range = " << range[j]
-                 << "num = " << num << " time = " << duration_sec.count()
-                 << std::endl;
+            cout << "key_idx = " << (int)i << " range = " << range[j]
+                 << " num = " << num << " time = " << duration_sec.count()
+                 << "ms" << std::endl;
             // cout << "Total time: " << duration_sec.count() << "ms\n";
         }
     }
