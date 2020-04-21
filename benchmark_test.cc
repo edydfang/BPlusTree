@@ -26,7 +26,7 @@ void load_db(bt& db) {
     uint32_t i = 0;
     char line[1024] = {0};
     while (fin.getline(line, sizeof(line))) {
-        cout << line << std::endl;
+        //cout << line << std::endl;
         assert(db.insert(bpt::vec4_t(date2keyarr(line, i)), i) == 0);
         i++;
     }
