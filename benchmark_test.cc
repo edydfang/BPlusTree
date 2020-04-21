@@ -22,15 +22,15 @@ typedef bpt::bplus_tree<bpt::vec4_t> bt;
 typedef bpt::vec4_t key;
 
 void load_db(bt& db) {
-    std::ifstream fin("data/li_short.txt", std::ios_base::binary);
+    std::ifstream fin("data/test.txt", std::ios_base::binary);
     uint32_t i = 0;
     char line[1024] = {0};
     while (fin.getline(line, sizeof(line))) {
-        //cout << line << std::endl;
+        // cout << line << std::endl;
         assert(db.insert(bpt::vec4_t(date2keyarr(line, i)), i) == 0);
         i++;
         if (i % 10000 == 0) {
-            printf("Finished %d insertion.\n", i);
+            cout << "Finished " << i << " insertion." << std::endl;
         }
     }
     fin.clear();
@@ -117,12 +117,12 @@ int main(int argc, char** argv) {
     high_resolution_clock::time_point end;
     duration<double, std::milli> duration_sec;
 
-    printf("Begin load!\n");
+    cout << "Begin load!\n";
     bt tree_vec4("test_vec4.db", true);
     load_db(tree_vec4);
     bpt::value_t* values = new bpt::value_t[SIZE];
 
-    printf("Begin test!\n");
+    cout << "Begin test!\n";
     int range[7] = {1, 2, 4, 8, 16, 30, 60};
     for (u_int8_t i = 0; i < 4; i++) {
         for (int j = 0; j < 7; j++) {
@@ -140,8 +140,9 @@ int main(int argc, char** argv) {
                     end - start);
             // Durations are converted to milliseconds already thanks to
             // std::chrono::duration_cast
-            printf("key_idx = %d, range = %d, num = %d, time = %lf ms\n", i,
-                   range[j], num, duration_sec.count());
+            cout << "key_idx = " << i << " range = " << range[j]
+                 << "num = " << num << " time = " << duration_sec.count()
+                 << std::endl;
             // cout << "Total time: " << duration_sec.count() << "ms\n";
         }
     }
