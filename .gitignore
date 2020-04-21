@@ -2,6 +2,8 @@
 *.db
 bpt_cli
 bpt_unit_test
+bpt_vec_unit_test
+bench_unit_test
 bpt_dump_numbers
 bpt_unit_test/*
 bpt_unit_test.dSYM
