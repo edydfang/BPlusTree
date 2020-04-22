@@ -544,6 +544,7 @@ void bplus_tree<KEY_TYPE>::insert_key_to_index(off_t offset,
     // update children's parent
     reset_index_children_parent(begin(new_node), end(new_node), node.next);
 
+    // recursively update the parent
     // give the middle key to the parent
     // note: middle key's child is reserved
     insert_key_to_index(node.parent, middle_key, offset, node.next);
@@ -556,7 +557,9 @@ template <typename KEY_TYPE>
 void bplus_tree<KEY_TYPE>::insert_key_to_index_no_split(
     internal_node_t<KEY_TYPE> &node, const KEY_TYPE &key, off_t value) {
   index_t<KEY_TYPE> *where = upper_bound(begin(node), end(node) - 1, key);
-
+  // NOTE: assume the key is greater than all values in the original node
+  // This is becuase the where index should point to the original old page,
+  // which is now the first half, a result of splitting.
   // move later index forward
   std::copy_backward(where, end(node), end(node) + 1);
 
