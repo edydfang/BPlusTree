@@ -93,7 +93,7 @@ class bplus_tree {
   int search_range(KEY_TYPE *left, const KEY_TYPE &right, value_t *values,
                    size_t max, bool *next = NULL) const;
   int search_range_single(vec4_t *left, const vec4_t &right, value_t *values,
-                          size_t max, bool *next = NULL,
+                          size_t max, vec4_t *next_key, bool *next = NULL,
                           u_int8_t key_idx = 0) const;
   int remove(const KEY_TYPE &key);
   int insert(const KEY_TYPE &key, value_t value);
