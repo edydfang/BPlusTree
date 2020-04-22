@@ -47,7 +47,7 @@ test:
 
 test_vec:
 	@-rm -f bpt_vec_unit_test
-	$(MAKE) TEST="-DUNIT_TEST" bpt_unit_test
+	$(MAKE) TEST="-DUNIT_TEST" bpt_vec_unit_test
 	./bpt_vec_unit_test
 
 test_zm:
@@ -77,6 +77,9 @@ bpt_cli: $(OBJ) util/cli.o
 
 bpt_unit_test:
 	$(QUIET_LINK)$(CXX) -o bpt_unit_test $(INCLUDE) $(CCOPT) $(DEBUG) util/unit_test.cc bpt.cc util/benchmark_utils.cc $(TEST) $(CCLINK)
+	$(QUIET_LINK)$(CXX) -o bpt_vec_unit_test $(INCLUDE) $(CCOPT) $(DEBUG) util/unit_test_vec.cc bpt.cc util/benchmark_utils.cc $(TEST) $(CCLINK)  
+
+bpt_vec_unit_test:
 	$(QUIET_LINK)$(CXX) -o bpt_vec_unit_test $(INCLUDE) $(CCOPT) $(DEBUG) util/unit_test_vec.cc bpt.cc util/benchmark_utils.cc $(TEST) $(CCLINK)  
 
 bpt_dump_numbers: $(DUMP_OBJ)

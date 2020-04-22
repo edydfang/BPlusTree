@@ -99,7 +99,7 @@ int bplus_tree<KEY_TYPE>::search_range(KEY_TYPE *left, const KEY_TYPE &right,
     // iterate to the next leaf
     off = leaf.next;
   }
-
+  printf("i = %d, b = %d, e = %d, off = %ld, off_right = %ld\n", i, b->value, e->value, off, off_right);
   // iterate the last leaf
   if (i < max) {
     map(&leaf, off_right);
@@ -109,6 +109,7 @@ int bplus_tree<KEY_TYPE>::search_range(KEY_TYPE *left, const KEY_TYPE &right,
     for (; b != e && i < max; ++b, ++i) values[i] = b->value;
   }
 
+  printf("i = %d, b = %d, e = %d\n", i, b->value, e->value);
   // mark for next iteration
   if (next != NULL) {
     if (i == max && b != e) {
@@ -672,11 +673,9 @@ void bplus_tree<KEY_TYPE>::init_from_empty() {
 }
 
 template <>
-int bpt::bplus_tree<bpt::vec4_t>::search_range_single(vec4_t *left,
-                                                      const vec4_t &right,
-                                                      value_t *values,
-                                                      size_t max, bool *next,
-                                                      u_int8_t key_idx) const {
+int bpt::bplus_tree<bpt::vec4_t>::search_range_single(
+    vec4_t *left, const vec4_t &right, value_t *values, size_t max,
+    vec4_t *next_key, bool *next, u_int8_t key_idx) const {
   int return_code = 0;
   if (key_idx == 0) {
     // range search
@@ -684,34 +683,62 @@ int bpt::bplus_tree<bpt::vec4_t>::search_range_single(vec4_t *left,
         bplus_tree<bpt::vec4_t>::search_range(left, right, values, max, next);
   } else {
     // scan all the leaf nodes
-    if (left == NULL || keycmp(*left, right) > 0) return -1;
-    size_t count = 0;
-    off_t off = meta.leaf_offset;
-    record_t<bpt::vec4_t> *b, *e;
+    if (left == NULL || keycmp(*left, right) > 0) {
+      *next = false;
+      return -1;
+    }
 
+    // printf("key1 = %d, key2 = %d, key3 = %d, key4 = %d\n", left->k[0],
+    //        left->k[1], left->k[2], left->k[3]);
+    size_t count = 0;
+
+    record_t<bpt::vec4_t> *b, *e;
     leaf_node_t<bpt::vec4_t> leaf;
-    while (off != 0 && count < max) {
+
+    //set leaf and b to right location
+    off_t off;
+    if (!next_key){
+      off = meta.leaf_offset;
       map(&leaf, off);
       b = begin(leaf);
+    } else {
+      off = search_leaf(*next_key);
+      map(&leaf, off);
+      b = find(leaf, *next_key);
+    }
+    //printf("b = %d\n", b->value);
+    while (off != 0 && count < max) {
       // set the end pointer of the current leaf node
       e = leaf.children + leaf.n;
       // copy the values
       for (; b != e && count < max; ++b) {
+        //printf("b.k = %d, left = %d, right = %d\n", b->key.k[key_idx], (*left).k[key_idx], right.k[key_idx]);
         if (b->key.k[key_idx] >= (*left).k[key_idx] &&
             b->key.k[key_idx] < right.k[key_idx]) {
           values[count++] = b->value;
+          //printf("count = %d, val = %d\n", count, b->value);
         }
+      }
+      if (count >= max && b != e){
+        break;
       }
       // iterate to the next leaf
       off = leaf.next;
+      if (off != 0){
+        map(&leaf, off);
+        b = begin(leaf);
+      }
     }
 
+    //printf("next = %d, count = %d\n", *next, count);
     // mark for next iteration
     if (next != NULL) {
       if (count >= max && off != 0) {
         // end due to the limitation of value arr size
         *next = true;
-        *left = b->key;
+        *next_key = b->key;
+        //printf("next_key1 = %d, key2 = %d, key3 = %d, key4 = %d\n", next_key->k[0],
+           //next_key->k[1], next_key->k[2], next_key->k[3]);
       } else {
         // all the result is returned
         *next = false;
@@ -743,7 +770,7 @@ int bpt::bplus_tree<bpt::vec4_t>::search_single(vec4_t &key, value_t *values,
   }
 
   int return_code = bplus_tree<bpt::vec4_t>::search_range_single(
-      &left_most, right_most, values, max, next, key_idx);
+      &left_most, right_most, values, max, NULL,next, key_idx);
   key = left_most;
   return return_code;
 }
