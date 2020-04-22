@@ -81,6 +81,7 @@ int bplus_tree<KEY_TYPE>::search_range(KEY_TYPE *left, const KEY_TYPE &right,
   off_t off = off_left;
   size_t i = 0;
   record_t<KEY_TYPE> *b, *e;
+  //printf("off_left = %lld, off_right = %lld\n", off_left, off_right);
 
   leaf_node_t<KEY_TYPE> leaf;
   while (off != off_right && off != 0 && i < max) {
@@ -98,8 +99,15 @@ int bplus_tree<KEY_TYPE>::search_range(KEY_TYPE *left, const KEY_TYPE &right,
     for (; b != e && i < max; ++b, ++i) values[i] = b->value;
     // iterate to the next leaf
     off = leaf.next;
+
+    // if b and i reach boundary condition simultaneously, we should
+    // check whether need to change b to next leaf's begin record
+    if(b == e && i == max && off != 0){
+      map(&leaf, off);
+      b = begin(leaf);
+    }
   }
-  printf("i = %d, b = %d, e = %d, off = %ld, off_right = %ld\n", i, b->value, e->value, off, off_right);
+  //printf("i = %zu, b = %d, e = %d, off = %lld, off_right = %lld\n", i, b->value, e->value, off, off_right);
   // iterate the last leaf
   if (i < max) {
     map(&leaf, off_right);
@@ -109,7 +117,7 @@ int bplus_tree<KEY_TYPE>::search_range(KEY_TYPE *left, const KEY_TYPE &right,
     for (; b != e && i < max; ++b, ++i) values[i] = b->value;
   }
 
-  printf("i = %d, b = %d, e = %d\n", i, b->value, e->value);
+  //printf("i = %zu, b = %d, e = %d\n", i, b->value, e->value);
   // mark for next iteration
   if (next != NULL) {
     if (i == max && b != e) {

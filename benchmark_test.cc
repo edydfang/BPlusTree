@@ -11,7 +11,7 @@
 #include "util/benchmark_utils.h"
 
 #define KEY(key, rid) bpt::vec4_t(date2keyarr(key, rid))
-#define SIZE 20000
+#define SIZE 10000
 
 // Provide some namespace shortcuts
 using std::cout;
@@ -52,11 +52,11 @@ int test(bt db, u_int8_t key_idx, int range, bpt::value_t* values) {
     //     return_num += db.search_single(l_key, values, SIZE, &next, key_idx);
     //   }
     //   return return_num;
-      key l_key = KEY("1994-02-02|1994-01-04|1994-02-23", 1);
-      key r_key = KEY("1994-02-03|1994-01-05|1994-02-24", 2);
+      key l_key = KEY("1994-10-16|1994-09-25|1994-10-19", 0);
+      key r_key = KEY("1994-10-17|1994-09-26|1994-10-20", 100000000);
       if (key_idx == 0) {
         while (next) {
-          return_num += db.search_range(&l_key, r_key, values, SIZE, &next);
+          return_num += db.search_single(l_key, values, SIZE, &next, 0);
         }
         return return_num;
       }
@@ -142,8 +142,10 @@ int test(bt db, u_int8_t key_idx, int range, bpt::value_t* values) {
       return return_num;
     }
     case 60: {
-      key l_key = KEY("1993-12-04|1994-01-07|1994-01-01", 0);
-      key r_key = KEY("1994-02-04|1994-03-07|1994-03-01", 60);
+    //   key l_key = KEY("1993-12-04|1994-01-07|1994-01-01", 0);
+    //   key r_key = KEY("1994-02-04|1994-03-07|1994-03-01", 60);
+      key l_key = KEY("1994-10-16|1994-09-25|1994-10-19", 0);
+      key r_key = KEY("1994-12-16|1994-11-25|1994-12-19", 60);
       if (key_idx == 0) {
         while (next) {
           return_num += db.search_range(&l_key, r_key, values, SIZE, &next);
@@ -175,8 +177,8 @@ int main(int argc, char** argv) {
 
   cout << "Begin test!\n";
   int range[7] = {1, 2, 4, 8, 16, 30, 60};
-  for (u_int8_t i = 0; i < 1; i++) {
-    for (int j = 6; j < 7; j++) {
+  for (u_int8_t i = 0; i < 3; i++) {
+    for (int j = 0; j < 7; j++) {
       // Get the starting timestamp
       start = high_resolution_clock::now();
 
