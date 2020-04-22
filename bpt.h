@@ -34,7 +34,8 @@ typedef struct {
 template <typename KEY_TYPE>
 struct index_t {
   KEY_TYPE key;
-  off_t child; /* child's offset */
+  off_t child;           /* child's offset */
+  uint32_t bound[2][2];  // just for aligning
 };
 
 /***
@@ -43,8 +44,8 @@ struct index_t {
 template <typename KEY_TYPE>
 struct internal_node_t {
   typedef index_t<KEY_TYPE> *child_t;
-
-  off_t parent; /* parent node offset */
+  bool node_type = 0;  // label as internal
+  off_t parent;        /* parent node offset */
   off_t next;
   off_t prev;
   size_t n; /* how many children */
@@ -56,14 +57,15 @@ template <typename KEY_TYPE>
 struct record_t {
   KEY_TYPE key;
   value_t value;
+  uint32_t bound[2][2];  // just for aligning
 };
 
 /* leaf node block */
 template <typename KEY_TYPE>
 struct leaf_node_t {
   typedef record_t<KEY_TYPE> *child_t;
-
-  off_t parent; /* parent node offset */
+  bool node_type = 1;  // label as leaf
+  off_t parent;        /* parent node offset */
   off_t next;
   off_t prev;
   size_t n;

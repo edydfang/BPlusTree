@@ -81,7 +81,6 @@ int main(int argc, char *argv[]) {
   {
     bplus_tree<bpt::vec4_t> tree_vec4("test_vec4.db");
     bpt::value_t values[SIZE];
-    bool next = true;
     int rid = 5;
     // insert
     for (; rid < 10; rid++) {

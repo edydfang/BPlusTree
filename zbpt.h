@@ -15,12 +15,13 @@ namespace bpt {
 
 struct index_zmap_t {
   vec4_t key;
-  uint32_t bound[2][2];
   off_t child; /* child's offset */
+  uint32_t bound[2][2];
 };
 
 struct internal_node_zmap_t {
   typedef index_zmap_t *child_t;
+  bool node_type = 0;  // label as internal
   off_t parent; /* parent node offset */
   off_t next;
   off_t prev;

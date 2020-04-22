@@ -1,5 +1,6 @@
 #include "./zbpt.h"
 
+#include <assert.h>
 #include <stdlib.h>
 
 #include <algorithm>
@@ -31,7 +32,9 @@ void bplus_tree_zmap::insert_record_no_split(leaf_node_t<vec4_t> *leaf,
 void bplus_tree_zmap::get_leaf_bounds(const leaf_node_t<vec4_t> &leaf,
                                       uint32_t bounds[4]) {
   // bounds 0: min for col2, 1: max for col2, 2: min for col3, 3: max for col3
+  assert(leaf.node_type == 1);
   const record_t<vec4_t> *cur, *end;
+  bounds[1] = bounds[3] = 0;
   bounds[0] = bounds[2] = numeric_limits<uint32_t>::max();
   cur = leaf.children;
   end = leaf.children + leaf.n;
@@ -47,8 +50,10 @@ void bplus_tree_zmap::get_leaf_bounds(const leaf_node_t<vec4_t> &leaf,
 
 void bplus_tree_zmap::get_internal_bounds(const internal_node_zmap_t &node,
                                           uint32_t bounds[4]) {
+  assert(node.node_type == 0);
   // bounds 0: min for col2, 1: max for col2, 2: min for col3, 3: max for col3
   const index_zmap_t *cur, *end;
+  bounds[1] = bounds[3] = 0;
   bounds[0] = bounds[2] = numeric_limits<uint32_t>::max();
   cur = node.children;
   end = node.children + node.n;
@@ -95,8 +100,8 @@ int bplus_tree_zmap::insert(const vec4_t &key, value_t value) {
       insert_record_no_split(&leaf, key, value);
     // scan two leaf to get new range
     uint32_t left_bounds[4], right_bounds[4];
-    bplus_tree_zmap::get_leaf_bounds(leaf, left_bounds);
-    bplus_tree_zmap::get_leaf_bounds(new_leaf, right_bounds);
+    get_leaf_bounds(leaf, left_bounds);
+    get_leaf_bounds(new_leaf, right_bounds);
     // save leafs
     unmap(&leaf, offset);
     unmap(&new_leaf, leaf.next);
@@ -237,12 +242,22 @@ void bplus_tree_zmap::insert_key_to_index_no_split(internal_node_zmap_t &node,
   internal_node_zmap_t tmp_node;
   uint32_t bounds[4];
   map(&tmp_node, where->child);
-  get_internal_bounds(node, bounds);
-  std::copy(&bounds[0], &bounds[0] + 3, &(where->bound[0][0]));
-  map(&tmp_node, (where + 1)->child);
-  get_internal_bounds(tmp_node, bounds);
-  std::copy(&bounds[0], &bounds[0] + 3, &((where + 1)->bound[0][0]));
-
+  // check type first
+  if (tmp_node.node_type != 0) {
+    // it is leaf node
+    leaf_node_t<vec4_t> *leaf = (leaf_node_t<vec4_t> *)&tmp_node;
+    get_leaf_bounds(*leaf, bounds);
+    std::copy(&bounds[0], &bounds[0] + 3, &(where->bound[0][0]));
+    map(leaf, (where + 1)->child);
+    get_leaf_bounds(*leaf, bounds);
+    std::copy(&bounds[0], &bounds[0] + 3, &((where + 1)->bound[0][0]));
+  } else {
+    get_internal_bounds(tmp_node, bounds);
+    std::copy(&bounds[0], &bounds[0] + 3, &(where->bound[0][0]));
+    map(&tmp_node, (where + 1)->child);
+    get_internal_bounds(tmp_node, bounds);
+    std::copy(&bounds[0], &bounds[0] + 3, &((where + 1)->bound[0][0]));
+  }
   node.n++;
 }
 
