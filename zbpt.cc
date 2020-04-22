@@ -8,11 +8,6 @@
 #include <limits>
 #include <list>
 
-using std::binary_search;
-using std::lower_bound;
-using std::numeric_limits;
-using std::upper_bound;
-
 namespace bpt {
 
 bplus_tree_zmap::bplus_tree_zmap(const char *path, bool force_empty)
@@ -293,52 +288,102 @@ off_t bplus_tree_zmap::search_index(const vec4_t &key) const {
   return org;
 }
 
-int bplus_tree_zmap::search_range_single(vec4_t *left, const vec4_t &right,
-                                         value_t *values, size_t max,
-                                         bool *next, u_int8_t key_idx) const {
+int bplus_tree_zmap::search_range_single(
+    vec4_t *left, const vec4_t &right, value_t *values, size_t max,
+    vec4_t *next_key, bool *next, u_int8_t key_idx,
+    std::queue<tuple<off_t, int>> *state_queue) const {
   int return_code = 0;
   if (key_idx == 0) {
     // range search
-    return_code = bplus_tree_zmap::search_range(left, right, values, max, next);
+    return_code =
+        bplus_tree<bpt::vec4_t>::search_range(left, right, values, max, next);
   } else {
-    // using the zonemap
-    // scan all the leaf nodes
-    if (left == NULL || keycmp(*left, right) > 0) return -1;
-    size_t count = 0;
-    off_t off = meta.leaf_offset;
-    record_t<bpt::vec4_t> *b, *e;
+    // using the zone map
+    int height = meta.height;
+    // stack of offset, level pair
+    std::queue<tuple<off_t, int>> *running_queue_p;
+    std::queue<tuple<off_t, int>> running_queue;
+    if (state_queue) {
+      // use the input queue
+      running_queue_p = state_queue;
+    } else {
+      // init from empty queue
+      running_queue_p = &running_queue;
+      // push root
+      running_queue_p->push(tuple<off_t, int>(meta.root_offset, 0));
+    }
 
-    leaf_node_t<bpt::vec4_t> leaf;
-    while (off != 0 && count < max) {
-      map(&leaf, off);
-      b = begin(leaf);
-      // set the end pointer of the current leaf node
-      e = leaf.children + leaf.n;
-      // copy the values
-      for (; b != e && count < max; ++b) {
-        if (b->key.k[key_idx] >= (*left).k[key_idx] &&
-            b->key.k[key_idx] < right.k[key_idx]) {
-          values[count++] = b->value;
+    tuple<off_t, int> next_tuple;
+    internal_node_zmap_t internal_node;
+    index_zmap_t *index_entry;
+    size_t child_iter = 0;
+    uint32_t target_left = left->k[key_idx], traget_right = right.k[key_idx];
+    size_t result_iter = 0;
+    while (!running_queue_p->empty()) {
+      next_tuple = running_queue_p->front();
+      running_queue_p->pop();
+      off_t offset = std::get<0>(next_tuple);
+      int level = std::get<1>(next_tuple);
+      if (level >= height) {
+        // this is the leaf node; scan all the entries!
+        leaf_node_t<vec4_t> leaf_node;
+        record_t<vec4_t> *record_entry;
+        map(&leaf_node, offset);
+        for (child_iter = 0; child_iter < leaf_node.n; child_iter++) {
+          record_entry = leaf_node.children + child_iter;
+          if (target_left <= record_entry->key.k[key_idx] &&
+              traget_right > record_entry->key.k[key_idx]) {
+            values[result_iter++] = record_entry->value;
+            return_code++;
+            if (result_iter == max) {
+              if (next) {
+                (*next) = !running_queue_p->empty();
+              }
+              return return_code;
+            }
+          }
+        }
+      } else {
+        // expend the index and filtering by the zone map
+        map(&internal_node, offset);
+        for (child_iter = 0; child_iter < internal_node.n; child_iter++) {
+          index_entry = internal_node.children + child_iter;
+          if (index_entry->bound[key_idx - 1][1] < target_left ||
+              index_entry->bound[key_idx - 1][0] >= traget_right ) {
+            // not in the range
+            continue;
+          }
+          running_queue_p->push(
+              tuple<off_t, int>(index_entry->child, level + 1));
         }
       }
-      // iterate to the next leaf
-      off = leaf.next;
     }
-
-    // mark for next iteration
-    if (next != NULL) {
-      if (count == max && off != 0) {
-        // end due to the limitation of value arr size
-        *next = true;
-        *left = b->key;
-      } else {
-        // all the result is returned
-        *next = false;
-      }
+    if (next) {
+      (*next) = false;
     }
-    // the size of the result
-    return_code = count;
   }
+  return return_code;
+}
+
+int bplus_tree_zmap::search_single(vec4_t &key, value_t *values, size_t max,
+                                   bool *next, u_int8_t key_idx) const {
+  if (key_idx > 3) {
+    return -1;
+  }
+  vec4_t left_most;
+  vec4_t right_most;
+  left_most.k[key_idx] = key.k[key_idx];
+  right_most.k[key_idx] = key.k[key_idx];
+  // if it is the first column
+  // we have to set all the reamining column to max for right_most
+  if (key_idx == 0) {
+    right_most.k[1] = right_most.k[2] = right_most.k[3] =
+        std::numeric_limits<uint32_t>::max();
+  }
+
+  int return_code = search_range_single(&left_most, right_most, values, max,
+                                        NULL, next, key_idx);
+  key = left_most;
   return return_code;
 }
 

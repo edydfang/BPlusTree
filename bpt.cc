@@ -1,8 +1,6 @@
 #include "bpt.h"
 
 #include <stdlib.h>
-
-#include <algorithm>
 #include <cstdint>
 #include <limits>
 #include <list>
@@ -12,29 +10,6 @@ using std::swap;
 using std::upper_bound;
 
 namespace bpt {
-
-/* helper searching function */
-template <typename KEY_TYPE>
-inline index_t<KEY_TYPE> *find(internal_node_t<KEY_TYPE> &node,
-                               const KEY_TYPE &key) {
-  if (key) {
-    return upper_bound(begin(node), end(node) - 1, key);
-  }
-  // because the end of the index range is an empty string, so if we search the
-  // empty key(when merge internal nodes), we need to return the second last one
-  if (node.n > 1) {
-    return node.children + node.n - 2;
-  }
-  return begin(node);
-}
-template <typename KEY_TYPE>
-inline record_t<KEY_TYPE> *find(leaf_node_t<KEY_TYPE> &node,
-                                const KEY_TYPE &key) {
-  // lower_bound
-  // Returns an iterator pointing to the first element in the
-  // range [first,last) which does not compare less than val.
-  return lower_bound(begin(node), end(node), key);
-}
 
 template <typename KEY_TYPE>
 bplus_tree<KEY_TYPE>::bplus_tree(const char *p, bool force_empty)
@@ -81,7 +56,7 @@ int bplus_tree<KEY_TYPE>::search_range(KEY_TYPE *left, const KEY_TYPE &right,
   off_t off = off_left;
   size_t i = 0;
   record_t<KEY_TYPE> *b, *e;
-  //printf("off_left = %lld, off_right = %lld\n", off_left, off_right);
+  // printf("off_left = %lld, off_right = %lld\n", off_left, off_right);
 
   leaf_node_t<KEY_TYPE> leaf;
   while (off != off_right && off != 0 && i < max) {
@@ -102,12 +77,13 @@ int bplus_tree<KEY_TYPE>::search_range(KEY_TYPE *left, const KEY_TYPE &right,
 
     // if b and i reach boundary condition simultaneously, we should
     // check whether need to change b to next leaf's begin record
-    if(b == e && i == max && off != 0){
+    if (b == e && i == max && off != 0) {
       map(&leaf, off);
       b = begin(leaf);
     }
   }
-  //printf("i = %zu, b = %d, e = %d, off = %lld, off_right = %lld\n", i, b->value, e->value, off, off_right);
+  // printf("i = %zu, b = %d, e = %d, off = %lld, off_right = %lld\n", i,
+  // b->value, e->value, off, off_right);
   // iterate the last leaf
   if (i < max) {
     map(&leaf, off_right);
@@ -117,7 +93,7 @@ int bplus_tree<KEY_TYPE>::search_range(KEY_TYPE *left, const KEY_TYPE &right,
     for (; b != e && i < max; ++b, ++i) values[i] = b->value;
   }
 
-  //printf("i = %zu, b = %d, e = %d\n", i, b->value, e->value);
+  // printf("i = %zu, b = %d, e = %d\n", i, b->value, e->value);
   // mark for next iteration
   if (next != NULL) {
     if (i == max && b != e) {
@@ -706,9 +682,9 @@ int bpt::bplus_tree<bpt::vec4_t>::search_range_single(
     record_t<bpt::vec4_t> *b, *e;
     leaf_node_t<bpt::vec4_t> leaf;
 
-    //set leaf and b to right location
+    // set leaf and b to right location
     off_t off;
-    if (!next_key){
+    if (!next_key) {
       off = meta.leaf_offset;
       map(&leaf, off);
       b = begin(leaf);
@@ -717,39 +693,40 @@ int bpt::bplus_tree<bpt::vec4_t>::search_range_single(
       map(&leaf, off);
       b = find(leaf, *next_key);
     }
-    //printf("b = %d\n", b->value);
+    // printf("b = %d\n", b->value);
     while (off != 0 && count < max) {
       // set the end pointer of the current leaf node
       e = leaf.children + leaf.n;
       // copy the values
       for (; b != e && count < max; ++b) {
-        //printf("b.k = %d, left = %d, right = %d\n", b->key.k[key_idx], (*left).k[key_idx], right.k[key_idx]);
+        // printf("b.k = %d, left = %d, right = %d\n", b->key.k[key_idx],
+        // (*left).k[key_idx], right.k[key_idx]);
         if (b->key.k[key_idx] >= (*left).k[key_idx] &&
             b->key.k[key_idx] < right.k[key_idx]) {
           values[count++] = b->value;
-          //printf("count = %d, val = %d\n", count, b->value);
+          // printf("count = %d, val = %d\n", count, b->value);
         }
       }
-      if (count >= max && b != e){
+      if (count >= max && b != e) {
         break;
       }
       // iterate to the next leaf
       off = leaf.next;
-      if (off != 0){
+      if (off != 0) {
         map(&leaf, off);
         b = begin(leaf);
       }
     }
 
-    //printf("next = %d, count = %d\n", *next, count);
+    // printf("next = %d, count = %d\n", *next, count);
     // mark for next iteration
     if (next != NULL) {
       if (count >= max && off != 0) {
         // end due to the limitation of value arr size
         *next = true;
         *next_key = b->key;
-        //printf("next_key1 = %d, key2 = %d, key3 = %d, key4 = %d\n", next_key->k[0],
-           //next_key->k[1], next_key->k[2], next_key->k[3]);
+        // printf("next_key1 = %d, key2 = %d, key3 = %d, key4 = %d\n",
+        // next_key->k[0], next_key->k[1], next_key->k[2], next_key->k[3]);
       } else {
         // all the result is returned
         *next = false;
@@ -781,7 +758,7 @@ int bpt::bplus_tree<bpt::vec4_t>::search_single(vec4_t &key, value_t *values,
   }
 
   int return_code = bplus_tree<bpt::vec4_t>::search_range_single(
-      &left_most, right_most, values, max, NULL,next, key_idx);
+      &left_most, right_most, values, max, NULL, next, key_idx);
   key = left_most;
   return return_code;
 }

@@ -6,11 +6,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <queue>
+#include <tuple>
+
 #include "./bpt.h"
 #include "./predefined.h"
 
 #define SIZE_NO_CHILDREN_ZMAP \
   sizeof(leaf_node_t<vec4_t>) - BP_ORDER * sizeof(record_t<vec4_t>)
+
+using std::binary_search;
+using std::lower_bound;
+using std::numeric_limits;
+using std::tuple;
+using std::upper_bound;
+
 namespace bpt {
 
 struct index_zmap_t {
@@ -22,7 +32,7 @@ struct index_zmap_t {
 struct internal_node_zmap_t {
   typedef index_zmap_t *child_t;
   bool node_type = 0;  // label as internal
-  off_t parent; /* parent node offset */
+  off_t parent;        /* parent node offset */
   off_t next;
   off_t prev;
   size_t n; /* how many children */
@@ -35,9 +45,12 @@ class bplus_tree_zmap : public bplus_tree<vec4_t> {
   explicit bplus_tree_zmap(const char *path, bool force_empty = false);
   // /* abstract operations */
   // int search(const vec4_t &key, value_t *value) const;
-  int search_range_single(vec4_t *left, const vec4_t &right, value_t *values,
-                          size_t max, bool *next = NULL,
-                          u_int8_t key_idx = 0) const;
+  int search_range_single(
+      vec4_t *left, const vec4_t &right, value_t *values, size_t max,
+      vec4_t *next_key, bool *next = NULL, u_int8_t key_idx = 0,
+      std::queue<tuple<off_t, int>> *state_queue = NULL) const;
+  int search_single(vec4_t &key, value_t *values, size_t max, bool *next = NULL,
+                    u_int8_t key_idx = 0) const;
   /* insert into leaf without split */
   void insert_record_no_split(leaf_node_t<vec4_t> *leaf, const vec4_t &key,
                               const value_t &value);

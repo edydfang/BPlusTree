@@ -5,8 +5,12 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <algorithm>
 
 #include "./predefined.h"
+using std::lower_bound;
+using std::swap;
+using std::upper_bound;
 
 namespace bpt {
 
@@ -153,7 +157,6 @@ class bplus_tree {
   /* change children's parent */
   void reset_index_children_parent(index_t<KEY_TYPE> *begin,
                                    index_t<KEY_TYPE> *end, off_t parent);
-
   template <class T>
   void node_create(off_t offset, T *node, T *next);
 
@@ -252,7 +255,28 @@ template <template <class> class NODE_TYPE, class KEY_TYPE>
 bool operator==(const NODE_TYPE<KEY_TYPE> &l, const KEY_TYPE &r) {
   return keycmp(l.key, r) == 0;
 }
-
+/* helper searching function */
+template <typename KEY_TYPE>
+inline index_t<KEY_TYPE> *find(internal_node_t<KEY_TYPE> &node,
+                               const KEY_TYPE &key) {
+  if (key) {
+    return upper_bound(begin(node), end(node) - 1, key);
+  }
+  // because the end of the index range is an empty string, so if we search the
+  // empty key(when merge internal nodes), we need to return the second last one
+  if (node.n > 1) {
+    return node.children + node.n - 2;
+  }
+  return begin(node);
+}
+template <typename KEY_TYPE>
+inline record_t<KEY_TYPE> *find(leaf_node_t<KEY_TYPE> &node,
+                                const KEY_TYPE &key) {
+  // lower_bound
+  // Returns an iterator pointing to the first element in the
+  // range [first,last) which does not compare less than val.
+  return lower_bound(begin(node), end(node), key);
+}
 }  // namespace bpt
 
 #endif  // BPT_H_
