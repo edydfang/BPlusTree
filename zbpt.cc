@@ -122,9 +122,10 @@ void bplus_tree_zmap::update_zonemap_upward(const vec4_t &new_key,
   off_t node_offset = node_to_start;
 
   leaf_node_t<vec4_t> leaf;
-  map(&leaf, node_offset);
+  off_t tmp = node_to_start;
+  map(&leaf, tmp);
   node_offset = leaf.parent;
-  unmap(&leaf, node_offset);
+  unmap(&leaf, tmp);
 
   while (node_offset != 0) {
     map(&node, node_offset);
@@ -138,9 +139,9 @@ void bplus_tree_zmap::update_zonemap_upward(const vec4_t &new_key,
         std::min({index_entry->bound[1][0], new_key.k[2]});
     index_entry->bound[1][1] =
         std::max({index_entry->bound[1][1], new_key.k[2]});
-    // off_t tmp = node_offset;
+     off_t tmp = node_offset;
     node_offset = node.parent;
-    // unmap(&node, tmp);
+     unmap(&node, tmp);
   }
 }
 
