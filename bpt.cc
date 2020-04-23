@@ -1,6 +1,7 @@
 #include "bpt.h"
 
 #include <stdlib.h>
+
 #include <cstdint>
 #include <limits>
 #include <list>
@@ -49,7 +50,10 @@ template <typename KEY_TYPE>
 int bplus_tree<KEY_TYPE>::search_range(KEY_TYPE *left, const KEY_TYPE &right,
                                        value_t *values, size_t max,
                                        bool *next) const {
-  if (left == NULL || keycmp(*left, right) > 0) return -1;
+  if (left == NULL || keycmp(*left, right) > 0) {
+    *next = false;
+    return -1;
+  }
 
   off_t off_left = search_leaf(*left);
   off_t off_right = search_leaf(right);

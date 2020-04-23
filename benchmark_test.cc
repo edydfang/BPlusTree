@@ -67,8 +67,8 @@ int test(bt db, u_int8_t key_idx, int range, bpt::value_t* values) {
       return return_num;
     }
     case 2: {
-      key l_key = KEY("1993-12-04|1994-01-07|1994-01-01", 0);
-      key r_key = KEY("1993-12-06|1994-01-09|1994-01-03", 2);
+      key l_key = KEY("1993-12-06|1994-01-09|1994-01-03", 0);
+      key r_key = KEY("1996-03-13|1996-02-12|1996-03-22", 2);
       if (key_idx == 0) {
         while (next) {
           return_num += db.search_range(&l_key, r_key, values, SIZE, &next);
@@ -171,8 +171,8 @@ int main(int argc, char** argv) {
   duration<double, std::milli> duration_sec;
 
   cout << "Begin load!\n";
-  bt tree_vec4("test_vec4.db", false);
-  // load_db(tree_vec4);
+  bt tree_vec4("test_vec4.db", true);
+  load_db(tree_vec4);
   bpt::value_t* values = new bpt::value_t[SIZE];
 
   cout << "Begin test!\n";
