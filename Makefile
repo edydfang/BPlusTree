@@ -38,12 +38,12 @@ test_bpt:
 	$(MAKE) TEST="-DUNIT_TEST" bpt_unit_test
 	./bpt_unit_test
 
-test_vec: bpt_vec_unit_test
+test_vec:
 	@-rm -f bpt_vec_unit_test
 	$(MAKE) TEST="-DUNIT_TEST" bpt_vec_unit_test 
 	./bpt_vec_unit_test
 
-test_zm: zbpt_unit_test
+test_zm:
 	@-rm -f zbpt_unit_test
 	$(MAKE) TEST="-DUNIT_TEST" zbpt_unit_test
 	./zbpt_unit_test
