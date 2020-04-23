@@ -6,6 +6,8 @@
 #include <cstdint>
 #include <vector>
 
+#define DB_SIZE 1  // how many MB should we map for the memory
+
 namespace bpt {
 
 /* predefined B+ info */

@@ -5,7 +5,13 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include <algorithm>
+#include <cstring>
+#include <filesystem>
 
 #include "./predefined.h"
 using std::lower_bound;
@@ -167,15 +173,40 @@ class bplus_tree {
   mutable FILE *fp;
   // ensure the file is opened only once
   mutable int fp_level;
+  mutable void *mem_bpt = NULL;
+  mutable uintmax_t file_size = 0;
+
   void open_file(const char *mode = "rb+") const {
     // `rb+` will make sure we can write everywhere without truncating file
-    if (fp_level == 0) fp = fopen(path, mode);
-
+    if (fp_level == 0 && !mem_bpt) {
+      fp = fopen(path, mode);
+      fseek(fp, 0L, SEEK_END);
+      file_size = ftell(fp);
+      fseek(fp, 0L, SEEK_SET);
+      // file_size = std::filesystem::file_size(path);
+      file_size = get_next_size(file_size);
+      // truncate to standard size
+      ftruncate(fp->_fileno, file_size);
+      // map to memory 100 MB
+      mem_bpt = mmap(NULL, file_size, PROT_READ | PROT_WRITE, MAP_SHARED,
+                     fp->_fileno, 0);
+    }
     ++fp_level;
   }
 
+  uintmax_t get_next_size(uintmax_t lower_size) const {
+    uintmax_t cur = DB_SIZE * 1024 * 1024;
+    while (cur < lower_size) {
+      cur *= 2;
+    }
+    return cur;
+  }
+  void save() {
+    msync(mem_bpt, file_size, MS_SYNC);
+    // munmap(mem_bpt, file_size);
+  }
   void close_file() const {
-    if (fp_level == 1) fclose(fp);
+    // if (fp_level == 1) fclose(fp);
 
     --fp_level;
   }
@@ -206,15 +237,26 @@ class bplus_tree {
   void unalloc(internal_node_t<KEY_TYPE> *node, off_t offset) {
     --meta.internal_node_num;
   }
+  void grow_file_size() const {
+    ftruncate(fp->_fileno, file_size * 2);
+    mem_bpt = mremap(mem_bpt, file_size, file_size * 2, MREMAP_MAYMOVE);
+    assert(mem_bpt != 0);
+    file_size = file_size * 2;
+  }
 
   /* read block from disk */
   int map(void *block, off_t offset, size_t size) const {
     open_file();
-    fseek(fp, offset, SEEK_SET);
-    size_t rd = fread(block, size, 1, fp);
+    if (offset + size > file_size) {
+      grow_file_size();
+    }
+    memcpy(block, (void *)((char *)mem_bpt + offset), size);
+    // fseek(fp, offset, SEEK_SET);
+    // size_t rd = fread(block, size, 1, fp);
     close_file();
 
-    return rd - 1;
+    // return rd - 1;
+    return 0;
   }
 
   template <class T>
@@ -225,11 +267,13 @@ class bplus_tree {
   /* write block to disk */
   int unmap(void *block, off_t offset, size_t size) const {
     open_file();
-    fseek(fp, offset, SEEK_SET);
-    size_t wd = fwrite(block, size, 1, fp);
+    memcpy((void *)((char *)mem_bpt + offset), block, size);
+    // fseek(fp, offset, SEEK_SET);
+    // size_t wd = fwrite(block, size, 1, fp);
     close_file();
 
-    return wd - 1;
+    // return wd - 1;
+    return 0;
   }
 
   template <class T>

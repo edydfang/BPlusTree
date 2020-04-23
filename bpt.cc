@@ -51,7 +51,9 @@ int bplus_tree<KEY_TYPE>::search_range(KEY_TYPE *left, const KEY_TYPE &right,
                                        value_t *values, size_t max,
                                        bool *next) const {
   if (left == NULL || keycmp(*left, right) > 0) {
-    *next = false;
+    if (next) {  // ensure not null
+      *next = false;
+    }
     return -1;
   }
 
