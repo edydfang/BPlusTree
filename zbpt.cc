@@ -139,9 +139,9 @@ void bplus_tree_zmap::update_zonemap_upward(const vec4_t &new_key,
         std::min({index_entry->bound[1][0], new_key.k[2]});
     index_entry->bound[1][1] =
         std::max({index_entry->bound[1][1], new_key.k[2]});
-     off_t tmp = node_offset;
+    off_t tmp = node_offset;
     node_offset = node.parent;
-     unmap(&node, tmp);
+    unmap(&node, tmp);
   }
 }
 
@@ -384,8 +384,8 @@ int bplus_tree_zmap::search_range_single(
           if (target_left <= record_entry->key.k[key_idx] &&
               traget_right > record_entry->key.k[key_idx]) {
             values[result_iter++] = record_entry->value;
-            printf("key = %d, val = %d, left = %d, right = %d\n", record_entry->key.k[key_idx],
-            record_entry->value, target_left, traget_right);
+            // printf("key = %d, val = %d, left = %d, right = %d\n", record_entry->key.k[key_idx],
+            // record_entry->value, target_left, traget_right);
             return_code++;
             if (return_code == (int)max) {
               if (next) {
