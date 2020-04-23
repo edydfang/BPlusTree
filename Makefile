@@ -56,6 +56,7 @@ benchmark_test: $(OBJ)
 
 zbpt_test: $(OBJ)
 	$(QUIET_LINK)$(CXX) -o zbpt_test $(INCLUDE) $(CCOPT) $(DEBUG) zbpt_test.cc $(OBJ) $(TEST) $(CCLINK)
+	./zbpt_test
 
 gprof:
 	$(MAKE) PROF="-pg"
