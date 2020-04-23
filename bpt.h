@@ -99,8 +99,8 @@ class bplus_tree {
   explicit bplus_tree(const char *path, bool force_empty = false);
   /* abstract operations */
   int search(const KEY_TYPE &key, value_t *value) const;
-  int search_single(vec4_t &key, value_t *values, size_t max, bool *next = NULL,
-                    u_int8_t key_idx = 0) const;
+  int search_single(vec4_t &key, value_t *values, size_t max, vec4_t *next_key,
+                    bool *next = NULL, u_int8_t key_idx = 0) const;
   int search_range(KEY_TYPE *left, const KEY_TYPE &right, value_t *values,
                    size_t max, bool *next = NULL) const;
   int search_range_single(vec4_t *left, const vec4_t &right, value_t *values,
@@ -214,7 +214,7 @@ class bplus_tree {
   off_t alloc(size_t size) {
     off_t slot = meta.slot;
     meta.slot += size;
-    if ((uintmax_t) meta.slot > file_size) {
+    if ((uintmax_t)meta.slot > file_size) {
       grow_file_size();
     }
     return slot;
