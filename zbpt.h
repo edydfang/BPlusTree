@@ -50,11 +50,11 @@ class bplus_tree_zmap : public bplus_tree<vec4_t> {
   int search_range_single(vec4_t *left, const vec4_t &right, value_t *values,
                           size_t max, bool *next = NULL, u_int8_t key_idx = 0,
                           std::queue<tuple<off_t, int>> *state_queue = NULL,
-                          int* start_pos_in_leaf = 0) const;
+                          int *start_pos_in_leaf = 0) const;
   int search_single(vec4_t &key, value_t *values, size_t max, bool *next = NULL,
                     u_int8_t key_idx = 0,
                     std::queue<tuple<off_t, int>> *state_queue = NULL,
-                    int* start_pos_in_leaf = 0) const;
+                    int *start_pos_in_leaf = 0) const;
   /* insert into leaf without split */
   void insert_record_no_split(leaf_node_t<vec4_t> *leaf, const vec4_t &key,
                               const value_t &value);
@@ -77,6 +77,7 @@ class bplus_tree_zmap : public bplus_tree<vec4_t> {
   void set_bounds(index_zmap_t *index_p, uint32_t bounds_arr[4]);
   void node_create(off_t offset, internal_node_zmap_t *node,
                    internal_node_zmap_t *next);
+  void update_zonemap_upward(const vec4_t &new_key, off_t node_to_start);
   off_t alloc(internal_node_zmap_t *node) {
     node->n = 1;
     meta.internal_node_num++;

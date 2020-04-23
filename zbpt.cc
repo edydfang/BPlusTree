@@ -91,7 +91,6 @@ int bplus_tree_zmap::insert(const vec4_t &key, value_t value) {
 
     // which part do we put the key
     if (place_right)
-      // 
       insert_record_no_split(&new_leaf, key, value);
     else
       insert_record_no_split(&leaf, key, value);
@@ -109,18 +108,32 @@ int bplus_tree_zmap::insert(const vec4_t &key, value_t value) {
   } else {
     // not split, we also need to update the bound
     insert_record_no_split(&leaf, key, value);
-    internal_node_zmap_t node;
-    map(&node, parent);
-    index_zmap_t *index_entry = upper_bound(begin(node), end(node) - 1, key);
-    index_entry->bound[0][0] = std::min({index_entry->bound[0][0], key.k[1]});
-    index_entry->bound[0][1] = std::max({index_entry->bound[0][1], key.k[1]});
-    index_entry->bound[1][0] = std::min({index_entry->bound[1][0], key.k[2]});
-    index_entry->bound[1][1] = std::max({index_entry->bound[1][1], key.k[2]});
-    unmap(&node, parent);
+
     unmap(&leaf, offset);
   }
+  update_zonemap_upward(key, offset);
 
   return 0;
+}
+
+void bplus_tree_zmap::update_zonemap_upward(const vec4_t &new_key,
+                                            off_t node_to_start) {
+  internal_node_zmap_t node;
+  off_t node_offset = node_to_start;
+  while (node_offset != 0) {
+    map(&node, node_offset);
+    index_zmap_t *index_entry =
+        upper_bound(begin(node), end(node) - 1, new_key);
+    index_entry->bound[0][0] =
+        std::min({index_entry->bound[0][0], new_key.k[1]});
+    index_entry->bound[0][1] =
+        std::max({index_entry->bound[0][1], new_key.k[1]});
+    index_entry->bound[1][0] =
+        std::min({index_entry->bound[1][0], new_key.k[2]});
+    index_entry->bound[1][1] =
+        std::max({index_entry->bound[1][1], new_key.k[2]});
+    node_offset = node.parent;
+  }
 }
 
 void bplus_tree_zmap::reset_index_children_parent(index_zmap_t *begin,
