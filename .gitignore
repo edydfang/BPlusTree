@@ -5,10 +5,10 @@ bpt_unit_test
 bpt_vec_unit_test
 zbpt_unit_test
 bench_unit_test
-benchmark_test
+*_benchmark
 bpt_dump_numbers
 bpt_unit_test/*
-bpt_unit_test.dSYM
+*.dSYM
 .vscode/*
 data/
 data_process

@@ -24,7 +24,7 @@ endif
 TESTPRGNAME = bpt_unit_test bpt_vec_unit_test zbpt_unit_test
 
 OBJ = bpt.o util/benchmark_utils.o zbpt.o
-PRGNAME = bpt_cli bpt_dump_numbers data_process benchmark_test
+PRGNAME = bpt_cli bpt_dump_numbers data_process bpt_benchmark zbpt_benchmark
 
 DUMP_OBJ = bpt.o util/dump_numbers.o
 
@@ -51,12 +51,11 @@ test_zm:
 data_process:
 	$(CXX) util/data_process.cpp -o data_process
 
-benchmark_test: $(OBJ)
-	$(QUIET_LINK)$(CXX) -o benchmark_test $(INCLUDE) $(CCOPT) $(DEBUG) benchmark_test.cc $(OBJ) $(TEST) $(CCLINK)
+bpt_benchmark: $(OBJ)
+	$(QUIET_LINK)$(CXX) -o bpt_benchmark $(INCLUDE) $(CCOPT) $(DEBUG) bpt_benchmark.cc $(OBJ) $(TEST) $(CCLINK)
 
-zbpt_test: $(OBJ)
-	$(QUIET_LINK)$(CXX) -o zbpt_test $(INCLUDE) $(CCOPT) $(DEBUG) zbpt_test.cc $(OBJ) $(TEST) $(CCLINK)
-	./zbpt_test
+zbpt_benchmark: $(OBJ)
+	$(QUIET_LINK)$(CXX) -o zbpt_benchmark $(INCLUDE) $(CCOPT) $(DEBUG) zbpt_benchmark.cc $(OBJ) $(TEST) $(CCLINK)
 
 gprof:
 	$(MAKE) PROF="-pg"

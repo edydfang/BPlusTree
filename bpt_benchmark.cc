@@ -68,7 +68,7 @@ int test(bt db, u_int8_t key_idx, int range, bpt::value_t* values) {
     }
     case 2: {
       key l_key = KEY("1993-12-06|1994-01-09|1994-01-03", 0);
-      key r_key = KEY("1996-03-13|1996-02-12|1996-03-22", 2);
+      key r_key = KEY("1993-12-06|1994-01-09|1994-01-03", 2);
       if (key_idx == 0) {
         while (next) {
           return_num += db.search_range(&l_key, r_key, values, SIZE, &next);
