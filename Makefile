@@ -48,14 +48,24 @@ test_zm:
 	$(MAKE) TEST="-DUNIT_TEST" zbpt_unit_test
 	./zbpt_unit_test
 
+dbgen:$(OBJ)
+	$(QUIET_LINK)$(CXX) -o dbgen $(INCLUDE) $(CCOPT) $(DEBUG) dbgen.cc $(OBJ) $(TEST) $(CCLINK)
+	./dbgen
+
+zdbgen:$(OBJ)
+	$(QUIET_LINK)$(CXX) -o zdbgen $(INCLUDE) $(CCOPT) $(DEBUG) zdbgen.cc $(OBJ) $(TEST) $(CCLINK)
+	./zdbgen
+
 data_process:
 	$(CXX) util/data_process.cpp -o data_process
 
 bpt_benchmark: $(OBJ)
 	$(QUIET_LINK)$(CXX) -o bpt_benchmark $(INCLUDE) $(CCOPT) $(DEBUG) bpt_benchmark.cc $(OBJ) $(TEST) $(CCLINK)
+	./bpt_benchmark
 
 zbpt_benchmark: $(OBJ)
 	$(QUIET_LINK)$(CXX) -o zbpt_benchmark $(INCLUDE) $(CCOPT) $(DEBUG) zbpt_benchmark.cc $(OBJ) $(TEST) $(CCLINK)
+	./zbpt_benchmark
 
 gprof:
 	$(MAKE) PROF="-pg"
