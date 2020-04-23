@@ -51,7 +51,7 @@ int test(bt db, u_int8_t key_idx, int range, bpt::value_t* values) {
       return return_num;
     }
     case 2: {
-      key l_key = KEY("1993-12-06|1994-01-09|1994-01-03", 0);
+      key l_key = KEY("1993-12-04|1994-01-07|1994-01-01", 0);
       key r_key = KEY("1993-12-06|1994-01-09|1994-01-03", 2);
       if (key_idx == 0) {
         while (next) {
