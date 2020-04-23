@@ -351,6 +351,8 @@ int bplus_tree_zmap::search_range_single(
           if (target_left <= record_entry->key.k[key_idx] &&
               traget_right > record_entry->key.k[key_idx]) {
             values[result_iter++] = record_entry->value;
+            printf("key = %d, val = %d, left = %d, right = %d\n", record_entry->key.k[key_idx],
+            record_entry->value, target_left, traget_right);
             return_code++;
             if (return_code == (int) max) {
               if (next) {
