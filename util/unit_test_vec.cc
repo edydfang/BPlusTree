@@ -98,7 +98,7 @@ int main(int argc, char *argv[]) {
     // only the first column should matter
     bpt::vec4_t single_key(
         date2keyarr("1993-01-02|1994-01-10|1995-01-02", 100));
-    int return_num = tree_vec4.search_single(single_key, values, SIZE);
+    int return_num = tree_vec4.search_single(single_key, values, SIZE, NULL);
     assert(return_num == 6);
     PRINT("SearchFirstColumnIndex");
   }

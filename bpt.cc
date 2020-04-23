@@ -739,7 +739,8 @@ int bpt::bplus_tree<bpt::vec4_t>::search_range_single(
 // search for a singe value for some single column
 template <>
 int bpt::bplus_tree<bpt::vec4_t>::search_single(vec4_t &key, value_t *values,
-                                                size_t max, bool *next,
+                                                size_t max, vec4_t *next_key,
+                                                bool *next,
                                                 u_int8_t key_idx) const {
   if (key_idx > 3) {
     return -1;
@@ -756,7 +757,7 @@ int bpt::bplus_tree<bpt::vec4_t>::search_single(vec4_t &key, value_t *values,
   }
 
   int return_code = bplus_tree<bpt::vec4_t>::search_range_single(
-      &left_most, right_most, values, max, NULL, next, key_idx);
+      &left_most, right_most, values, max, next_key, next, key_idx);
   key = left_most;
   return return_code;
 }
