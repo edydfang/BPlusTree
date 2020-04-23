@@ -111,7 +111,7 @@ int bplus_tree_zmap::insert(const vec4_t &key, value_t value) {
 
     unmap(&leaf, offset);
   }
-  update_zonemap_upward(key, offset);
+  update_zonemap_upward(key, parent);
 
   return 0;
 }
@@ -359,7 +359,7 @@ int bplus_tree_zmap::search_range_single(
       // start from this leaf node, with a init position
       child_iter = (*start_pos_in_leaf);
     }
-    uint32_t target_left = left->k[key_idx], traget_right = right.k[key_idx];
+    uint32_t target_left = left->k[key_idx], target_right = right.k[key_idx];
     size_t result_iter = 0;
     while (!running_queue_p->empty()) {
       next_tuple = running_queue_p->front();
@@ -373,7 +373,7 @@ int bplus_tree_zmap::search_range_single(
         for (; child_iter < leaf_node.n; child_iter++) {
           record_entry = leaf_node.children + child_iter;
           if (target_left <= record_entry->key.k[key_idx] &&
-              traget_right > record_entry->key.k[key_idx]) {
+              target_right > record_entry->key.k[key_idx]) {
             values[result_iter++] = record_entry->value;
             return_code++;
             if (return_code == (int)max) {
@@ -394,12 +394,12 @@ int bplus_tree_zmap::search_range_single(
         for (child_iter = 0; child_iter < internal_node.n; child_iter++) {
           index_entry = internal_node.children + child_iter;
           if ((index_entry->bound[key_idx - 1][1] < target_left ||
-               index_entry->bound[key_idx - 1][0] >= traget_right) &&
-              target_left != traget_right) {
+               index_entry->bound[key_idx - 1][0] >= target_right) &&
+              target_left != target_right) {
             // not in the range
             continue;
           }
-          if (target_left == traget_right &&
+          if (target_left == target_right &&
               (target_left < index_entry->bound[key_idx - 1][0] ||
                target_left >= index_entry->bound[key_idx - 1][1])) {
             continue;
