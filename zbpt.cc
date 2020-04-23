@@ -152,10 +152,12 @@ void bplus_tree_zmap::insert_key_to_index(off_t offset, const vec4_t &key,
     // update zone map
     // we need to scan the lower level index or leaf to get new zonemap
     // not the same function for leaf node and the internal node
-    std::copy(&old_bounds[0], &old_bounds[0] + 4,
-              &(root.children[0].bound[0][0]));
-    std::copy(&after_bounds[0], &after_bounds[0] + 4,
-              &(root.children[1].bound[0][0]));
+    copy_arr(old_bounds, root.children[0].bound);
+    copy_arr(after_bounds, root.children[1].bound);
+    // std::copy(&old_bounds[0], &old_bounds[0] + 4,
+    //           &(root.children[0].bound[0][0]));
+    // std::copy(&after_bounds[0], &after_bounds[0] + 4,
+    //           &(root.children[1].bound[0][0]));
 
     unmap(&meta, OFFSET_META);
     unmap(&root, meta.root_offset);
@@ -219,6 +221,14 @@ void bplus_tree_zmap::insert_key_to_index(off_t offset, const vec4_t &key,
   }
 }
 
+inline void copy_arr(uint32_t *bounds1d, uint32_t bounds2d[][2]) {
+  bounds2d[0][0] = bounds1d[0];
+  bounds2d[0][1] = bounds1d[1];
+  bounds2d[1][0] = bounds1d[2];
+  bounds2d[1][1] = bounds1d[3];
+  return;
+}
+
 void bplus_tree_zmap::insert_key_to_index_no_split(internal_node_zmap_t &node,
                                                    const vec4_t &key,
                                                    off_t value) {
@@ -242,16 +252,17 @@ void bplus_tree_zmap::insert_key_to_index_no_split(internal_node_zmap_t &node,
     // it is leaf node
     leaf_node_t<vec4_t> *leaf = (leaf_node_t<vec4_t> *)&tmp_node;
     get_leaf_bounds(*leaf, bounds);
-    std::copy(&bounds[0], &bounds[0] + 3, &(where->bound[0][0]));
+    // std::copy(&bounds[0], &bounds[0] + 3, &(where->bound[0][0]));
+    copy_arr(bounds, where->bound);
     map(leaf, (where + 1)->child);
     get_leaf_bounds(*leaf, bounds);
-    std::copy(&bounds[0], &bounds[0] + 3, &((where + 1)->bound[0][0]));
+    copy_arr(bounds, where->bound);
   } else {
     get_internal_bounds(tmp_node, bounds);
-    std::copy(&bounds[0], &bounds[0] + 3, &(where->bound[0][0]));
+    copy_arr(bounds, where->bound);
     map(&tmp_node, (where + 1)->child);
     get_internal_bounds(tmp_node, bounds);
-    std::copy(&bounds[0], &bounds[0] + 3, &((where + 1)->bound[0][0]));
+    copy_arr(bounds, where->bound);
   }
   node.n++;
 }
@@ -309,7 +320,8 @@ int bplus_tree_zmap::search_range_single(
     } else {
       // init from empty queue
       running_queue_p = &running_queue;
-      // push root
+    }
+    if (running_queue_p->empty()) {  // push root
       running_queue_p->push(tuple<off_t, int>(meta.root_offset, 0));
     }
 
@@ -348,9 +360,15 @@ int bplus_tree_zmap::search_range_single(
         map(&internal_node, offset);
         for (child_iter = 0; child_iter < internal_node.n; child_iter++) {
           index_entry = internal_node.children + child_iter;
-          if (index_entry->bound[key_idx - 1][1] < target_left ||
-              index_entry->bound[key_idx - 1][0] >= traget_right ) {
+          if ((index_entry->bound[key_idx - 1][1] < target_left ||
+               index_entry->bound[key_idx - 1][0] >= traget_right) &&
+              target_left != traget_right) {
             // not in the range
+            continue;
+          }
+          if (target_left == traget_right &&
+              (target_left < index_entry->bound[key_idx - 1][0] ||
+               target_left >= index_entry->bound[key_idx - 1][1])) {
             continue;
           }
           running_queue_p->push(

@@ -23,6 +23,8 @@ using std::upper_bound;
 
 namespace bpt {
 
+inline void copy_arr(uint32_t* bounds1d, uint32_t bounds2d[][2]);
+
 struct index_zmap_t {
   vec4_t key;
   off_t child; /* child's offset */

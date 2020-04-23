@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
     PRINT("SearchFirstColumnIndex");
   }
   {
-    bplus_tree<bpt::vec4_t> tree_vec4("test_vec4.db");
+    bplus_tree_zmap tree_vec4("test_zm.db");
     bpt::value_t values[SIZE];
     bool next = true;
     const std::vector<uint32_t> all_zero = {0, 0, 0, 0};
@@ -121,23 +121,21 @@ int main(int argc, char *argv[]) {
   }
 
   {
-    bplus_tree<bpt::vec4_t> tree_vec4("test_vec4.db");
+    bplus_tree_zmap tree_vec4("test_zm.db");
     bpt::value_t values[SIZE];
     bool next = true;
     const std::vector<uint32_t> all_zero = {0, 0, 0, 0};
     bpt::vec4_t next_key(all_zero);
     bpt::vec4_t left_key(date2keyarr("1993-01-02|1990-01-01|1995-01-01", 5));
     bpt::vec4_t right_key(date2keyarr("1993-01-02|1999-01-01|1995-01-03", 15));
-    int return_num = false;
+    int return_num = 0;
     // test for third column
     // left is 1995-01-01 and right is 1995-01-03, limit size by 3
+    std::queue<tuple<off_t, int>> state_queue;
     for (int i = 0; next; i++) {
-      return_num += tree_vec4.search_range_single(&left_key, right_key, values,
-                                                  3, &next_key, &next, 2);
+      return_num += tree_vec4.search_range_single(
+          &left_key, right_key, values, 3, &next_key, &next, 2, &state_queue);
       if (i == 0) {
-        bpt::vec4_t target_key(
-            date2keyarr("1993-01-02|1994-01-06|1995-01-02", 6));
-        assert(next_key == target_key);
         assert(next == true);
       }
     }
