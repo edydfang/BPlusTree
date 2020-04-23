@@ -214,6 +214,9 @@ class bplus_tree {
   off_t alloc(size_t size) {
     off_t slot = meta.slot;
     meta.slot += size;
+    if ((uintmax_t) meta.slot > file_size) {
+      grow_file_size();
+    }
     return slot;
   }
 
@@ -246,9 +249,7 @@ class bplus_tree {
   /* read block from disk */
   int map(void *block, off_t offset, size_t size) const {
     open_file();
-    if (offset + size > file_size) {
-      grow_file_size();
-    }
+
     memcpy(block, (void *)((char *)mem_bpt + offset), size);
     // fseek(fp, offset, SEEK_SET);
     // size_t rd = fread(block, size, 1, fp);
