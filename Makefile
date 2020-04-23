@@ -54,7 +54,7 @@ data_process:
 benchmark_test: $(OBJ)
 	$(QUIET_LINK)$(CXX) -o benchmark_test $(INCLUDE) $(CCOPT) $(DEBUG) benchmark_test.cc $(OBJ) $(TEST) $(CCLINK)
 
-benchmark_test: $(OBJ)
+zbpt_test: $(OBJ)
 	$(QUIET_LINK)$(CXX) -o zbpt_test $(INCLUDE) $(CCOPT) $(DEBUG) zbpt_test.cc $(OBJ) $(TEST) $(CCLINK)
 
 gprof:
