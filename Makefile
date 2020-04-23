@@ -48,6 +48,14 @@ test_zm:
 	$(MAKE) TEST="-DUNIT_TEST" zbpt_unit_test
 	./zbpt_unit_test
 
+dbgen:$(OBJ)
+	$(QUIET_LINK)$(CXX) -o dbgen $(INCLUDE) $(CCOPT) $(DEBUG) dbgen.cc $(OBJ) $(TEST) $(CCLINK)
+	./dbgen
+
+zdbgen:$(OBJ)
+	$(QUIET_LINK)$(CXX) -o zdbgen $(INCLUDE) $(CCOPT) $(DEBUG) zdbgen.cc $(OBJ) $(TEST) $(CCLINK)
+	./zdbgen
+
 data_process:
 	$(CXX) util/data_process.cpp -o data_process
 

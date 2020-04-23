@@ -21,22 +21,6 @@ using std::chrono::high_resolution_clock;
 typedef bpt::bplus_tree<bpt::vec4_t> bt;
 typedef bpt::vec4_t key;
 
-void load_db(bt& db) {
-  std::ifstream fin("data/result.txt", std::ios_base::binary);
-  uint32_t i = 0;
-  char line[1024] = {0};
-  while (fin.getline(line, sizeof(line))) {
-    // cout << line << std::endl;
-    assert(db.insert(bpt::vec4_t(date2keyarr(line, i)), i) == 0);
-    i++;
-    if (i % 10000 == 0) {
-      cout << "Finished " << i << " insertion." << std::endl;
-    }
-  }
-  fin.clear();
-  fin.close();
-}
-
 int test(bt db, u_int8_t key_idx, int range, bpt::value_t* values) {
   bool next = true;
   int return_num = 0;
@@ -171,8 +155,7 @@ int main(int argc, char** argv) {
   duration<double, std::milli> duration_sec;
 
   cout << "Begin load!\n";
-  bt tree_vec4("test_vec4.db", true);
-  load_db(tree_vec4);
+  bt tree_vec4("test_vec4.db", false);
   bpt::value_t* values = new bpt::value_t[SIZE];
 
   cout << "Begin test!\n";
