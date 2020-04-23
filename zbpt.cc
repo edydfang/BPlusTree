@@ -113,9 +113,9 @@ int bplus_tree_zmap::insert(const vec4_t &key, value_t value) {
     map(&node, parent);
     index_zmap_t *index_entry = upper_bound(begin(node), end(node) - 1, key);
     index_entry->bound[0][0] = std::min({index_entry->bound[0][0], key.k[1]});
-    index_entry->bound[0][1] = std::min({index_entry->bound[0][1], key.k[1]});
+    index_entry->bound[0][1] = std::max({index_entry->bound[0][1], key.k[1]});
     index_entry->bound[1][0] = std::min({index_entry->bound[1][0], key.k[2]});
-    index_entry->bound[1][1] = std::min({index_entry->bound[1][1], key.k[2]});
+    index_entry->bound[1][1] = std::max({index_entry->bound[1][1], key.k[2]});
     unmap(&node, parent);
     unmap(&leaf, offset);
   }
