@@ -128,8 +128,8 @@ int main(int argc, char** argv) {
 
   cout << "Begin test!\n";
   int range[7] = {1, 2, 4, 8, 16, 30, 60};
-  for (u_int8_t i = 1; i < 2; i++) {
-    for (int j = 0; j < 1; j++) {
+  for (u_int8_t i = 0; i < 3; i++) {
+    for (int j = 0; j < 7; j++) {
       // Get the starting timestamp
       start = high_resolution_clock::now();
 
