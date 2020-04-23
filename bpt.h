@@ -11,7 +11,6 @@
 
 #include <algorithm>
 #include <cstring>
-#include <filesystem>
 
 #include "./predefined.h"
 using std::lower_bound;
