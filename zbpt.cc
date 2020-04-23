@@ -22,6 +22,7 @@ void bplus_tree_zmap::insert_record_no_split(leaf_node_t<vec4_t> *leaf,
   where->key = key;
   where->value = value;
   leaf->n++;
+  // we need to update the bounds in the parent pointer of this leaf node
 }
 
 void bplus_tree_zmap::get_leaf_bounds(const leaf_node_t<vec4_t> &leaf,
@@ -90,6 +91,7 @@ int bplus_tree_zmap::insert(const vec4_t &key, value_t value) {
 
     // which part do we put the key
     if (place_right)
+      // 
       insert_record_no_split(&new_leaf, key, value);
     else
       insert_record_no_split(&leaf, key, value);
@@ -105,7 +107,16 @@ int bplus_tree_zmap::insert(const vec4_t &key, value_t value) {
     insert_key_to_index(parent, new_leaf.children[0].key, offset, leaf.next,
                         left_bounds, right_bounds);
   } else {
+    // not split, we also need to update the bound
     insert_record_no_split(&leaf, key, value);
+    internal_node_zmap_t node;
+    map(&node, parent);
+    index_zmap_t *index_entry = upper_bound(begin(node), end(node) - 1, key);
+    index_entry->bound[0][0] = std::min({index_entry->bound[0][0], key.k[1]});
+    index_entry->bound[0][1] = std::min({index_entry->bound[0][1], key.k[1]});
+    index_entry->bound[1][0] = std::min({index_entry->bound[1][0], key.k[2]});
+    index_entry->bound[1][1] = std::min({index_entry->bound[1][1], key.k[2]});
+    unmap(&node, parent);
     unmap(&leaf, offset);
   }
 
@@ -352,7 +363,7 @@ int bplus_tree_zmap::search_range_single(
               traget_right > record_entry->key.k[key_idx]) {
             values[result_iter++] = record_entry->value;
             return_code++;
-            if (return_code == (int) max) {
+            if (return_code == (int)max) {
               if (next) {
                 (*next) = !running_queue_p->empty();
               }
