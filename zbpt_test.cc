@@ -23,7 +23,7 @@ typedef bpt::bplus_tree_zmap bt;
 typedef bpt::vec4_t key;
 
 void load_db(bt& db) {
-  std::ifstream fin("data/result.txt", std::ios_base::binary);
+  std::ifstream fin("data/li_short.txt", std::ios_base::binary);
   uint32_t i = 0;
   char line[1024] = {0};
   while (fin.getline(line, sizeof(line))) {
