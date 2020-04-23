@@ -61,9 +61,11 @@ data_process:
 
 bpt_benchmark: $(OBJ)
 	$(QUIET_LINK)$(CXX) -o bpt_benchmark $(INCLUDE) $(CCOPT) $(DEBUG) bpt_benchmark.cc $(OBJ) $(TEST) $(CCLINK)
+	./bpt_benchmark
 
 zbpt_benchmark: $(OBJ)
 	$(QUIET_LINK)$(CXX) -o zbpt_benchmark $(INCLUDE) $(CCOPT) $(DEBUG) zbpt_benchmark.cc $(OBJ) $(TEST) $(CCLINK)
+	./zbpt_benchmark
 
 gprof:
 	$(MAKE) PROF="-pg"
