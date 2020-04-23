@@ -21,43 +21,39 @@ QUIET_CC = @printf '    %b %b\n' $(CCCOLOR)CXX$(ENDCOLOR) $(SRCCOLOR)$@$(ENDCOLO
 QUIET_LINK = @printf '    %b %b\n' $(LINKCOLOR)LINK$(ENDCOLOR) $(BINCOLOR)$@$(ENDCOLOR);
 endif
 
-TESTPRGNAME = bpt_unit_test
+TESTPRGNAME = bpt_unit_test bpt_vec_unit_test zbpt_unit_test
 
 OBJ = bpt.o util/benchmark_utils.o zbpt.o
-PRGNAME = bpt_cli
+PRGNAME = bpt_cli bpt_dump_numbers data_process benchmark_test
 
 DUMP_OBJ = bpt.o util/dump_numbers.o
-DUMPPRGNAME = bpt_dump_numbers
 
-all: $(DUMPPRGNAME) $(PRGNAME)
-
-process:
-	$(CXX) util/data_process.cpp -o data_process
-	./data_process
-
-benchmark:
-	$(QUIET_LINK)$(CXX) -o benchmark_test $(INCLUDE) $(CCOPT) $(DEBUG) benchmark_test.cc bpt.cc util/benchmark_utils.cc $(TEST) $(CCLINK)
-	./benchmark_test
-
-zbpt: $(OBJ)
-	$(QUIET_LINK)$(CXX) -o zbpt $(INCLUDE) $(CCOPT) $(DEBUG) zbpt_test.cc $(TEST) $(CCLINK) $(OBJ)
-	./zbpt
+all: $(PRGNAME)
 
 test:
+	$(MAKE) test_bpt test_vec test_zm
+
+test_bpt:
 	@-rm -f bpt_unit_test
 	$(MAKE) TEST="-DUNIT_TEST" bpt_unit_test
 	./bpt_unit_test
-	./bpt_vec_unit_test
 
-test_vec:
+test_vec: bpt_vec_unit_test
 	@-rm -f bpt_vec_unit_test
-	$(MAKE) TEST="-DUNIT_TEST" bpt_vec_unit_test
+	$(MAKE) TEST="-DUNIT_TEST" bpt_vec_unit_test 
 	./bpt_vec_unit_test
 
-test_zm:
+test_zm: zbpt_unit_test
 	@-rm -f zbpt_unit_test
 	$(MAKE) TEST="-DUNIT_TEST" zbpt_unit_test
 	./zbpt_unit_test
+
+data_process:
+	$(CXX) util/data_process.cpp -o data_process
+
+benchmark_test: $(OBJ)
+	$(QUIET_LINK)$(CXX) -o benchmark_test $(INCLUDE) $(CCOPT) $(DEBUG) benchmark_test.cc $(OBJ) $(TEST) $(CCLINK)
+
 gprof:
 	$(MAKE) PROF="-pg"
 
@@ -68,32 +64,28 @@ noopt:
 	$(MAKE) OPTIMIZATION=""
 
 clean:
-	rm -rf $(PRGNAME) $(TESTPRGNAME) $(DUMPPRGNAME) $(CHECKDUMPPRGNAME) $(CHECKAOFPRGNAME) *.o *.gcda *.gcno *.gcov util/*.o data_process benchmark_test zbpt
-
-distclean: clean
-	$(MAKE) clean
+	rm -rf $(PRGNAME) $(TESTPRGNAME) *.o util/*.o
 
 dep:
 	$(CC) -MM *.cc
 
 bpt_cli: $(OBJ) util/cli.o
-	$(QUIET_LINK)$(CXX) -o $(PRGNAME) $(CCOPT) $(DEBUG) $(OBJ) $(CCLINK)
+	$(QUIET_LINK)$(CXX) -o bpt_cli $(CCOPT) $(DEBUG) util/cli.o $(OBJ) $(CCLINK)
 
 bpt_unit_test:
 	$(QUIET_LINK)$(CXX) -o bpt_unit_test $(INCLUDE) $(CCOPT) $(DEBUG) util/unit_test.cc bpt.cc util/benchmark_utils.cc $(TEST) $(CCLINK)
-	$(QUIET_LINK)$(CXX) -o bpt_vec_unit_test $(INCLUDE) $(CCOPT) $(DEBUG) util/unit_test_vec.cc bpt.cc util/benchmark_utils.cc $(TEST) $(CCLINK)  
 
 bpt_vec_unit_test:
 	$(QUIET_LINK)$(CXX) -o bpt_vec_unit_test $(INCLUDE) $(CCOPT) $(DEBUG) util/unit_test_vec.cc bpt.cc util/benchmark_utils.cc $(TEST) $(CCLINK)  
 
 bpt_dump_numbers: $(DUMP_OBJ)
-	$(QUIET_LINK)$(CXX) -o $(DUMPPRGNAME) $(CCOPT) $(DEBUG) $(DUMP_OBJ) $(CCLINK)
+	$(QUIET_LINK)$(CXX) -o bpt_dump_numbers $(CCOPT) $(DEBUG) $(DUMP_OBJ) $(CCLINK)
 
 bench_unit_test: ./util/benchmark_utils_test.cc
-	$(QUIET_LINK)$(CXX) -o bench_unit_test $(DEBUG) util/benchmark_utils_test.cc util/benchmark_utils.cc $(TEST) $(CCLINK) 
+	$(QUIET_LINK)$(CXX) -o bench_unit_test $(DEBUG) util/benchmark_utils_test.cc util/benchmark_utils.cc $(CCLINK) 
 
-zbpt_unit_test: $(OBJ) util/unit_test_zvec.cc
-	$(QUIET_LINK)$(CXX) -o zbpt_unit_test $(INCLUDE) $(CCOPT) $(DEBUG) util/unit_test_zvec.cc $(OBJ) $(TEST) $(CCLINK)
+zbpt_unit_test: $(OBJ)
+	$(QUIET_LINK)$(CXX) -o zbpt_unit_test $(INCLUDE) $(CCOPT) $(DEBUG) $(TEST) util/unit_test_zvec.cc $(OBJ) $(CCLINK)
 
 
 %.o: %.cc

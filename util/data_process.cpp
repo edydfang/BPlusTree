@@ -4,9 +4,14 @@
 #include <iostream>
 #include <sstream>
 
-int main(int args, char **argv) {
-  std::ifstream fin("data/lineitem.txt", std::ios::in);
-  std::ofstream fout("data/li_short.txt", std::ios::trunc | std::ios::out);
+int main(int argc, char **argv) {
+  if (argc != 2) {
+    fprintf(stderr, "please put the input file as the first argument!");
+    exit(EXIT_FAILURE);
+  }
+
+  std::ifstream fin(argv[1], std::ios::in);
+  std::ofstream fout("data/result.txt", std::ios::trunc | std::ios::out);
 
   char line[1024] = {0};
   char tmp[33] = {0};
