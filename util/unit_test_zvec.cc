@@ -105,16 +105,18 @@ int main(int argc, char *argv[]) {
   {
     bplus_tree_zmap tree_vec4("test_zm.db");
     bpt::value_t values[SIZE];
+    std::queue<tuple<off_t, int>> state_queue;
+    int cur_index_in_leaf = 0;
     bool next = true;
     const std::vector<uint32_t> all_zero = {0, 0, 0, 0};
-    bpt::vec4_t next_key(all_zero);
     bpt::vec4_t left_key(date2keyarr("1993-01-02|1990-01-01|1995-01-01", 5));
     bpt::vec4_t right_key(date2keyarr("1993-01-02|1999-01-01|1995-01-03", 15));
     int return_num = 0;
     // test for second column
     // at this time, left is 1990-01-01 and right is 1999-01-01(including all)
-    return_num = tree_vec4.search_range_single(&left_key, right_key, values,
-                                               SIZE, &next_key, &next, 1);
+    return_num =
+        tree_vec4.search_range_single(&left_key, right_key, values, SIZE, &next,
+                                      1, &state_queue, &cur_index_in_leaf);
     assert(return_num == 14);
     assert(next == false);
     PRINT("SearchSecondColumnIndex");
@@ -125,16 +127,17 @@ int main(int argc, char *argv[]) {
     bpt::value_t values[SIZE];
     bool next = true;
     const std::vector<uint32_t> all_zero = {0, 0, 0, 0};
-    bpt::vec4_t next_key(all_zero);
     bpt::vec4_t left_key(date2keyarr("1993-01-02|1990-01-01|1995-01-01", 5));
     bpt::vec4_t right_key(date2keyarr("1993-01-02|1999-01-01|1995-01-03", 15));
     int return_num = 0;
     // test for third column
     // left is 1995-01-01 and right is 1995-01-03, limit size by 3
     std::queue<tuple<off_t, int>> state_queue;
+    int cur_index_in_leaf = 0;
     for (int i = 0; next; i++) {
-      return_num += tree_vec4.search_range_single(
-          &left_key, right_key, values, 3, &next_key, &next, 2, &state_queue);
+      return_num += tree_vec4.search_range_single(&left_key, right_key, values,
+                                                  3, &next, 2, &state_queue,
+                                                  &cur_index_in_leaf);
       if (i == 0) {
         assert(next == true);
       }

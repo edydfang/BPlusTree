@@ -23,7 +23,7 @@ using std::upper_bound;
 
 namespace bpt {
 
-inline void copy_arr(uint32_t* bounds1d, uint32_t bounds2d[][2]);
+inline void copy_arr(uint32_t *bounds1d, uint32_t bounds2d[][2]);
 
 struct index_zmap_t {
   vec4_t key;
@@ -47,12 +47,14 @@ class bplus_tree_zmap : public bplus_tree<vec4_t> {
   explicit bplus_tree_zmap(const char *path, bool force_empty = false);
   // /* abstract operations */
   // int search(const vec4_t &key, value_t *value) const;
-  int search_range_single(
-      vec4_t *left, const vec4_t &right, value_t *values, size_t max,
-      vec4_t *next_key, bool *next = NULL, u_int8_t key_idx = 0,
-      std::queue<tuple<off_t, int>> *state_queue = NULL) const;
+  int search_range_single(vec4_t *left, const vec4_t &right, value_t *values,
+                          size_t max, bool *next = NULL, u_int8_t key_idx = 0,
+                          std::queue<tuple<off_t, int>> *state_queue = NULL,
+                          int* start_pos_in_leaf = 0) const;
   int search_single(vec4_t &key, value_t *values, size_t max, bool *next = NULL,
-                    u_int8_t key_idx = 0) const;
+                    u_int8_t key_idx = 0,
+                    std::queue<tuple<off_t, int>> *state_queue = NULL,
+                    int* start_pos_in_leaf = 0) const;
   /* insert into leaf without split */
   void insert_record_no_split(leaf_node_t<vec4_t> *leaf, const vec4_t &key,
                               const value_t &value);

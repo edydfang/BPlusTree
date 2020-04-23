@@ -256,13 +256,13 @@ void bplus_tree_zmap::insert_key_to_index_no_split(internal_node_zmap_t &node,
     copy_arr(bounds, where->bound);
     map(leaf, (where + 1)->child);
     get_leaf_bounds(*leaf, bounds);
-    copy_arr(bounds, where->bound);
+    copy_arr(bounds, (where + 1)->bound);
   } else {
     get_internal_bounds(tmp_node, bounds);
     copy_arr(bounds, where->bound);
     map(&tmp_node, (where + 1)->child);
     get_internal_bounds(tmp_node, bounds);
-    copy_arr(bounds, where->bound);
+    copy_arr(bounds, (where + 1)->bound);
   }
   node.n++;
 }
@@ -300,9 +300,9 @@ off_t bplus_tree_zmap::search_index(const vec4_t &key) const {
 }
 
 int bplus_tree_zmap::search_range_single(
-    vec4_t *left, const vec4_t &right, value_t *values, size_t max,
-    vec4_t *next_key, bool *next, u_int8_t key_idx,
-    std::queue<tuple<off_t, int>> *state_queue) const {
+    vec4_t *left, const vec4_t &right, value_t *values, size_t max, bool *next,
+    u_int8_t key_idx, std::queue<tuple<off_t, int>> *state_queue,
+    int *start_pos_in_leaf) const {
   int return_code = 0;
   if (key_idx == 0) {
     // range search
@@ -328,12 +328,17 @@ int bplus_tree_zmap::search_range_single(
     tuple<off_t, int> next_tuple;
     internal_node_zmap_t internal_node;
     index_zmap_t *index_entry;
-    size_t child_iter = 0;
+    size_t child_iter;  // = (*start_pos_in_leaf);
+    next_tuple = running_queue_p->front();
+    int level = std::get<1>(next_tuple);
+    if (level >= height) {
+      // start from this leaf node, with a init position
+      child_iter = (*start_pos_in_leaf);
+    }
     uint32_t target_left = left->k[key_idx], traget_right = right.k[key_idx];
     size_t result_iter = 0;
     while (!running_queue_p->empty()) {
       next_tuple = running_queue_p->front();
-      running_queue_p->pop();
       off_t offset = std::get<0>(next_tuple);
       int level = std::get<1>(next_tuple);
       if (level >= height) {
@@ -341,20 +346,24 @@ int bplus_tree_zmap::search_range_single(
         leaf_node_t<vec4_t> leaf_node;
         record_t<vec4_t> *record_entry;
         map(&leaf_node, offset);
-        for (child_iter = 0; child_iter < leaf_node.n; child_iter++) {
+        for (; child_iter < leaf_node.n; child_iter++) {
           record_entry = leaf_node.children + child_iter;
           if (target_left <= record_entry->key.k[key_idx] &&
               traget_right > record_entry->key.k[key_idx]) {
             values[result_iter++] = record_entry->value;
             return_code++;
-            if (result_iter == max) {
+            if (return_code == (int) max) {
               if (next) {
                 (*next) = !running_queue_p->empty();
+              }
+              if (start_pos_in_leaf) {
+                (*start_pos_in_leaf) = ++child_iter;
               }
               return return_code;
             }
           }
         }
+
       } else {
         // expend the index and filtering by the zone map
         map(&internal_node, offset);
@@ -375,6 +384,8 @@ int bplus_tree_zmap::search_range_single(
               tuple<off_t, int>(index_entry->child, level + 1));
         }
       }
+      running_queue_p->pop();
+      child_iter = 0;
     }
     if (next) {
       (*next) = false;
@@ -384,7 +395,9 @@ int bplus_tree_zmap::search_range_single(
 }
 
 int bplus_tree_zmap::search_single(vec4_t &key, value_t *values, size_t max,
-                                   bool *next, u_int8_t key_idx) const {
+                                   bool *next, u_int8_t key_idx,
+                                   std::queue<tuple<off_t, int>> *state_queue,
+                                   int *start_pos_in_leaf) const {
   if (key_idx > 3) {
     return -1;
   }
@@ -399,8 +412,9 @@ int bplus_tree_zmap::search_single(vec4_t &key, value_t *values, size_t max,
         std::numeric_limits<uint32_t>::max();
   }
 
-  int return_code = search_range_single(&left_most, right_most, values, max,
-                                        NULL, next, key_idx);
+  int return_code =
+      search_range_single(&left_most, right_most, values, max, next, key_idx,
+                          state_queue, start_pos_in_leaf);
   key = left_most;
   return return_code;
 }
