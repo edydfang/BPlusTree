@@ -1,5 +1,7 @@
 *.o
 *.db
+dbgen
+zdbgen
 bpt_cli
 bpt_unit_test
 bpt_vec_unit_test

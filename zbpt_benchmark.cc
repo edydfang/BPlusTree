@@ -1,5 +1,3 @@
-#include "zbpt.h"
-
 #include <assert.h>
 
 #include <chrono>
@@ -10,6 +8,7 @@
 #include <string>
 
 #include "util/benchmark_utils.h"
+#include "zbpt.h"
 
 #define KEY(key, rid) bpt::vec4_t(date2keyarr(key, rid))
 #define SIZE 10000
@@ -27,6 +26,7 @@ int test(bt db, u_int8_t key_idx, int range, bpt::value_t* values) {
   int return_num = 0;
   const std::vector<uint32_t> all_zero = {0, 0, 0, 0};
   bpt::vec4_t next_key(all_zero);
+  int next_pos;
   // key left_key = KEY("1993-12-04|1994-01-07|1994-01-01", 0);
   std::queue<tuple<off_t, int>> state_queue;
 
@@ -43,9 +43,8 @@ int test(bt db, u_int8_t key_idx, int range, bpt::value_t* values) {
       key r_key = KEY("1994-10-17|1994-09-26|1994-10-20", 100000000);
 
       while (next) {
-        return_num +=
-            db.search_range_single(&l_key, r_key, values, SIZE, &next_key,
-                                   &next, key_idx, &state_queue);
+        return_num += db.search_range_single(&l_key, r_key, values, SIZE, &next,
+                                             key_idx, &state_queue, &next_pos);
       }
       return return_num;
     }
@@ -54,9 +53,8 @@ int test(bt db, u_int8_t key_idx, int range, bpt::value_t* values) {
       key r_key = KEY("1993-12-06|1994-01-09|1994-01-03", 2);
 
       while (next) {
-        return_num +=
-            db.search_range_single(&l_key, r_key, values, SIZE, &next_key,
-                                   &next, key_idx, &state_queue);
+        return_num += db.search_range_single(&l_key, r_key, values, SIZE, &next,
+                                             key_idx, &state_queue, &next_pos);
       }
       return return_num;
     }
@@ -65,9 +63,8 @@ int test(bt db, u_int8_t key_idx, int range, bpt::value_t* values) {
       key r_key = KEY("1993-12-08|1994-01-11|1994-01-05", 4);
 
       while (next) {
-        return_num +=
-            db.search_range_single(&l_key, r_key, values, SIZE, &next_key,
-                                   &next, key_idx, &state_queue);
+        return_num += db.search_range_single(&l_key, r_key, values, SIZE, &next,
+                                             key_idx, &state_queue, &next_pos);
       }
       return return_num;
     }
@@ -76,9 +73,8 @@ int test(bt db, u_int8_t key_idx, int range, bpt::value_t* values) {
       key r_key = KEY("1993-12-12|1994-01-15|1994-01-09", 8);
 
       while (next) {
-        return_num +=
-            db.search_range_single(&l_key, r_key, values, SIZE, &next_key,
-                                   &next, key_idx, &state_queue);
+        return_num += db.search_range_single(&l_key, r_key, values, SIZE, &next,
+                                             key_idx, &state_queue, &next_pos);
       }
       return return_num;
     }
@@ -87,9 +83,8 @@ int test(bt db, u_int8_t key_idx, int range, bpt::value_t* values) {
       key r_key = KEY("1993-12-20|1994-01-23|1994-01-17", 16);
 
       while (next) {
-        return_num +=
-            db.search_range_single(&l_key, r_key, values, SIZE, &next_key,
-                                   &next, key_idx, &state_queue);
+        return_num += db.search_range_single(&l_key, r_key, values, SIZE, &next,
+                                             key_idx, &state_queue, &next_pos);
       }
       return return_num;
     }
@@ -98,9 +93,8 @@ int test(bt db, u_int8_t key_idx, int range, bpt::value_t* values) {
       key r_key = KEY("1994-01-04|1994-02-07|1994-02-01", 30);
 
       while (next) {
-        return_num +=
-            db.search_range_single(&l_key, r_key, values, SIZE, &next_key,
-                                   &next, key_idx, &state_queue);
+        return_num += db.search_range_single(&l_key, r_key, values, SIZE, &next,
+                                             key_idx, &state_queue, &next_pos);
       }
       return return_num;
     }
@@ -111,9 +105,8 @@ int test(bt db, u_int8_t key_idx, int range, bpt::value_t* values) {
       key r_key = KEY("1994-12-16|1994-11-25|1994-12-19", 60);
 
       while (next) {
-        return_num +=
-            db.search_range_single(&l_key, r_key, values, SIZE, &next_key,
-                                   &next, key_idx, &state_queue);
+        return_num += db.search_range_single(&l_key, r_key, values, SIZE, &next,
+                                             key_idx, &state_queue, &next_pos);
       }
       return return_num;
     }
