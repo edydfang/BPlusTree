@@ -38,12 +38,12 @@ int test(bt db, u_int8_t key_idx, int range, bpt::value_t* values) {
     //   return return_num;
       key l_key = KEY("1994-10-16|1994-09-25|1994-10-19", 0);
       key r_key = KEY("1994-10-17|1994-09-26|1994-10-20", 100000000);
-      if (key_idx == 0) {
-        while (next) {
-          return_num += db.search_single(l_key, values, SIZE, &next, 0);
-        }
-        return return_num;
-      }
+      // if (key_idx == 0) {
+      //   while (next) {
+      //     return_num += db.search_single(l_key, values, SIZE, &next, 0);
+      //   }
+      //   return return_num;
+      // }
       while (next) {
         return_num += db.search_range_single(&l_key, r_key, values, SIZE,
                                              &next_key, &next, key_idx);
