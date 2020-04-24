@@ -706,6 +706,8 @@ int bpt::bplus_tree<bpt::vec4_t>::search_range_single(
         if (b->key.k[key_idx] >= (*left).k[key_idx] &&
             b->key.k[key_idx] < right.k[key_idx]) {
           values[count++] = b->value;
+          // printf("key = %d, val = %d, left = %d, right = %d\n", b->key.k[key_idx],
+          // b->value, (*left).k[key_idx], right.k[key_idx]);
         }
       }
       if (count >= max && b != e) {
