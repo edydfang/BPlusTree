@@ -111,7 +111,7 @@ int bplus_tree_zmap::insert(const vec4_t &key, value_t value) {
 
     unmap(&leaf, offset);
   }
-  update_zonemap_upward(key, parent);
+  update_zonemap_upward(key, offset);
 
   return 0;
 }
