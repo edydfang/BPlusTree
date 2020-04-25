@@ -12,6 +12,8 @@
 
 #ifndef SOURCE
 #define SOURCE "data/li_short.txt"
+#else
+#define SOURCE "data/li_short_10.txt"
 #endif
 
 #define KEY(key, rid) bpt::vec4_t(date2keyarr(key, rid))
