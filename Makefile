@@ -57,7 +57,7 @@ zdbgen:$(OBJ)
 data_process:
 	$(CXX) util/data_process.cpp -o data_process
 
-bpt_benchmark: $(OBJ)
+benchmark: $(OBJ)
 	$(QUIET_LINK)$(CXX) -o benchmark $(INCLUDE) $(CCOPT) $(DEBUG) benchmark.cc $(OBJ) $(TEST) $(CCLINK)
 
 bpt_benchmark: $(OBJ)
