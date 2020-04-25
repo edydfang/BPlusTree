@@ -143,17 +143,17 @@ int main() {
 
   // test for 10 times
   for (int i = 0; i < 10; i++) {
+    generate_date(left, right);
+
+    key l_key = KEY(left, 0);
+    key r_key[7];
+    for (int m = 0; m < 7; m++) {
+      r_key[m] = KEY(right[m], std::numeric_limits<uint32_t>::max());
+    }
+
     for (u_int8_t k = 0; k < 3; k++) {
       for (int j = 0; j < 7; j++) {
-        generate_date(left, right);
-
-        key l_key = KEY(left, 0);
-        key r_key[7];
-        for (int m = 0; m < 7; m++) {
-          r_key[m] = KEY(right[m], std::numeric_limits<uint32_t>::max());
-        }
-
-        cout << "iteration = " << i << "key_idx = " << (int)i
+        cout << "iteration = " << i << " key_idx = " << (int)i
              << " left = " << left << " right = " << right[j] << std::endl;
 
         start = high_resolution_clock::now();
@@ -180,8 +180,7 @@ int main() {
   cout << "------------bpt time--------------" << std::endl;
   for (u_int8_t k = 0; k < 3; k++) {
     for (int j = 0; j < 7; j++) {
-      cout << "key_idx = " << (int)k << " left key = " << left
-           << " right key = " << right[j]
+      cout << "key_idx = " << (int)k
            << " time = " << bpt_time[k][j].count() / 10 << "ms" << std::endl;
     }
   }
@@ -189,8 +188,7 @@ int main() {
   cout << "------------zbpt time--------------" << std::endl;
   for (u_int8_t k = 0; k < 3; k++) {
     for (int j = 0; j < 7; j++) {
-      cout << "key_idx = " << (int)k << " left key = " << left
-           << " right key = " << right[j]
+      cout << "key_idx = " << (int)k
            << " time = " << zbpt_time[k][j].count() / 10 << "ms" << std::endl;
     }
   }
