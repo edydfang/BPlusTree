@@ -58,6 +58,9 @@ data_process:
 	$(CXX) util/data_process.cpp -o data_process
 
 bpt_benchmark: $(OBJ)
+	$(QUIET_LINK)$(CXX) -o benchmark $(INCLUDE) $(CCOPT) $(DEBUG) benchmark.cc $(OBJ) $(TEST) $(CCLINK)
+
+bpt_benchmark: $(OBJ)
 	$(QUIET_LINK)$(CXX) -o bpt_benchmark $(INCLUDE) $(CCOPT) $(DEBUG) bpt_benchmark.cc $(OBJ) $(TEST) $(CCLINK)
 
 zbpt_benchmark: $(OBJ)
