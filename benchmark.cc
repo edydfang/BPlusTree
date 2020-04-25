@@ -25,6 +25,8 @@ typedef bpt::bplus_tree<bpt::vec4_t> bt;
 typedef bpt::bplus_tree_zmap zbt;
 typedef bpt::vec4_t key;
 
+int range[7] = {1, 2, 4, 8, 16, 30, 60};
+
 void n_days_after(const int date[3], int n, int new_date[3]) {
   int mon[13] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
@@ -61,8 +63,6 @@ L_COMMITDATE = O_ORDERDATE + random value [30 .. 90].
 L_RECEIPTDATE = L_SHIPDATE + random value [1 .. 30].
 */
 void generate_date(char left[], char right[][33]) {
-  int range[7] = {1, 2, 4, 8, 16, 30, 60};
-
   srand((unsigned)time(NULL));
   int order_date[3] = {rand() % (1997 - 1992 + 1) + 1992, rand() % 12 + 1,
                        rand() % 28 + 1};
@@ -129,6 +129,7 @@ int main() {
   // init vars for timing
   high_resolution_clock::time_point start;
   high_resolution_clock::time_point end;
+  duration<double, std::milli> tmp;
   duration<double, std::milli> bpt_time[3][7];
   duration<double, std::milli> zbpt_time[3][7];
 
@@ -153,34 +154,35 @@ int main() {
 
     for (u_int8_t k = 0; k < 3; k++) {
       for (int j = 0; j < 7; j++) {
-        cout << "iteration = " << i << " key_idx = " << (int)i
+        cout << "iteration = " << i << " key_idx = " << (int)k
              << " left = " << left << " right = " << right[j] << std::endl;
 
         start = high_resolution_clock::now();
         int bpt_num = bpt_test(tree_vec4, k, l_key, r_key[j], values);
         end = high_resolution_clock::now();
-        bpt_time[k][j] +=
-            std::chrono::duration_cast<duration<double, std::milli>>(end -
-                                                                     start);
+        tmp = std::chrono::duration_cast<duration<double, std::milli>>(end -
+                                                                       start);
+        bpt_time[k][j] += tmp;
 
-        cout << " num = " << bpt_num << " time = " << bpt_time[k][j].count()
-             << "ms" << std::endl;
+        cout << " num = " << bpt_num << " time = " << tmp.count() << "ms"
+             << std::endl;
 
         start = high_resolution_clock::now();
         int zbpt_num = zbpt_test(z_tree_vec4, k, l_key, r_key[j], values);
         end = high_resolution_clock::now();
-        zbpt_time[k][j] +=
-            std::chrono::duration_cast<duration<double, std::milli>>(end -
-                                                                     start);
-        cout << " z_num = " << zbpt_num << " time = " << zbpt_time[k][j].count()
-             << "ms" << std::endl;
+        tmp = std::chrono::duration_cast<duration<double, std::milli>>(end -
+                                                                       start);
+        zbpt_time[k][j] += tmp;
+
+        cout << " z_num = " << zbpt_num << " time = " << tmp.count() << "ms"
+             << std::endl;
       }
     }
   }
   cout << "------------bpt time--------------" << std::endl;
   for (u_int8_t k = 0; k < 3; k++) {
     for (int j = 0; j < 7; j++) {
-      cout << "key_idx = " << (int)k
+      cout << "key_idx = " << (int)k << "range = " << range[j]
            << " time = " << bpt_time[k][j].count() / 10 << "ms" << std::endl;
     }
   }
@@ -188,7 +190,7 @@ int main() {
   cout << "------------zbpt time--------------" << std::endl;
   for (u_int8_t k = 0; k < 3; k++) {
     for (int j = 0; j < 7; j++) {
-      cout << "key_idx = " << (int)k
+      cout << "key_idx = " << (int)k << "range = " << range[j]
            << " time = " << zbpt_time[k][j].count() / 10 << "ms" << std::endl;
     }
   }

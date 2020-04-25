@@ -49,16 +49,16 @@ test_zm:
 	./zbpt_unit_test
 
 dbgen:$(OBJ)
-	$(QUIET_LINK)$(CXX) -o dbgen $(INCLUDE) $(CCOPT) $(DEBUG) dbgen.cc $(OBJ) $(TEST) $(CCLINK)
+	$(QUIET_LINK)$(CXX) -o dbgen $(ORDER) $(SOURCE) $(INCLUDE) $(CCOPT) $(DEBUG) dbgen.cc $(OBJ) $(TEST) $(CCLINK)
 
 zdbgen:$(OBJ)
-	$(QUIET_LINK)$(CXX) -o zdbgen $(INCLUDE) $(CCOPT) $(DEBUG) zdbgen.cc $(OBJ) $(TEST) $(CCLINK)
+	$(QUIET_LINK)$(CXX) -o zdbgen  $(ORDER) $(SOURCE) $(INCLUDE) $(CCOPT) $(DEBUG) zdbgen.cc $(OBJ) $(TEST) $(CCLINK)
 
 data_process:
 	$(CXX) util/data_process.cpp -o data_process
 
 benchmark: $(OBJ)
-	$(QUIET_LINK)$(CXX) -o benchmark $(INCLUDE) $(CCOPT) $(DEBUG) benchmark.cc $(OBJ) $(TEST) $(CCLINK)
+	$(QUIET_LINK)$(CXX) -o benchmark  $(ORDER) $(INCLUDE) $(CCOPT) $(DEBUG) benchmark.cc $(OBJ) $(TEST) $(CCLINK)
 
 bpt_benchmark: $(OBJ)
 	$(QUIET_LINK)$(CXX) -o bpt_benchmark $(INCLUDE) $(CCOPT) $(DEBUG) bpt_benchmark.cc $(OBJ) $(TEST) $(CCLINK)
