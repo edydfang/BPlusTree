@@ -60,7 +60,7 @@ int main() {
          << std::endl;
   }
 
-  cout << "ORDER = " << BP_ORDER << " time = " << duration_sec.count() / 5
+  cout << "ORDER = " << BP_ORDER << " time = " << duration_sec.count()
        << "ms" << std::endl;
   return 0;
 }
