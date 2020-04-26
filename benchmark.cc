@@ -161,8 +161,8 @@ int main() {
 
     for (u_int8_t k = 0; k < 3; k++) {
       for (int j = 0; j < 7; j++) {
-        cout << "iteration = " << i << " key_idx = " << (int)k
-             << " left = " << left << " right = " << right[j] << std::endl;
+        // cout << "iteration = " << i << " key_idx = " << (int)k
+        //      << " left = " << left << " right = " << right[j] << std::endl;
 
         start = high_resolution_clock::now();
         int bpt_num = bpt_test(tree_vec4, k, l_key, r_key[j], values);
