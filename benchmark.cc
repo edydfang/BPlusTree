@@ -148,7 +148,7 @@ int main() {
   // generate left and right date
   char left[33] = {0};
   char right[7][33] = {0};
-
+  int dummy[1500000] = {0};
   // test for 10 times
   for (int i = 0; i < 10; i++) {
     generate_date(left, right);
@@ -171,8 +171,9 @@ int main() {
                                                                        start);
         bpt_time[k][j] += tmp;
 
-        cout << " num = " << bpt_num << " time = " << tmp.count() << "ms"
-             << std::endl;
+        for (int i = 0; i < 1500000; i++) dummy[i] = 1;
+        // cout << " num = " << bpt_num << " time = " << tmp.count() << "ms"
+        //      << std::endl;
 
         start = high_resolution_clock::now();
         int zbpt_num = zbpt_test(z_tree_vec4, k, l_key, r_key[j], values);
@@ -181,8 +182,9 @@ int main() {
                                                                        start);
         zbpt_time[k][j] += tmp;
 
-        cout << " z_num = " << zbpt_num << " time = " << tmp.count() << "ms"
-             << std::endl;
+        // cout << " z_num = " << zbpt_num << " time = " << tmp.count() << "ms"
+        //      << std::endl;
+        for (int i = 0; i < 1500000; i++) dummy[i] = 0;
       }
     }
   }
