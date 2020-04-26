@@ -12,9 +12,9 @@
 #include "util/benchmark_utils.h"
 
 #ifndef SOURCE
-#define SOURCE "data/li_short.txt"
+#define F_SOURCE "data/li_short.txt"
 #else
-#define SOURCE "data/li_short_10.txt"
+#define F_SOURCE "data/li_short_10.txt"
 #endif
 
 #define KEY(key, rid) bpt::vec4_t(date2keyarr(key, rid))
@@ -30,7 +30,7 @@ typedef bpt::vec4_t key;
 
 void zdbgen() {
   bt db("zbpt_vec4.db", true);
-  std::ifstream fin(SOURCE, std::ios_base::binary);
+  std::ifstream fin(F_SOURCE, std::ios_base::binary);
   uint32_t i = 0;
   char line[1024] = {0};
   while (fin.getline(line, sizeof(line))) {
