@@ -1,5 +1,3 @@
-#include "zbpt.h"
-
 #include <assert.h>
 
 #include <chrono>
@@ -10,6 +8,7 @@
 #include <string>
 
 #include "util/benchmark_utils.h"
+#include "zbpt.h"
 
 #ifndef SOURCE
 #define F_SOURCE "data/li_short.txt"
@@ -48,7 +47,8 @@ void zdbgen() {
 int main() {
   high_resolution_clock::time_point start;
   high_resolution_clock::time_point end;
-  duration<double, std::milli> duration_sec;
+  duration<double, std::milli> duration_sec =
+      std::chrono::steady_clock::duration::zero();
   duration<double, std::milli> tmp;
 
   for (int i = 0; i < 5; i++) {
@@ -62,6 +62,7 @@ int main() {
          << std::endl;
   }
 
-  cout <<"ORDER = "<<BP_ORDER<< " time = " << duration_sec.count() / 5 << "ms" << std::endl;
+  cout << "ORDER = " << BP_ORDER << " time = " << duration_sec.count() / 5
+       << "ms" << std::endl;
   return 0;
 }

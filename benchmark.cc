@@ -133,6 +133,13 @@ int main() {
   duration<double, std::milli> bpt_time[3][7];
   duration<double, std::milli> zbpt_time[3][7];
 
+  for (int k = 0; k < 3; k++) {
+    for (int j = 0; j < 7; j++) {
+      bpt_time[k][j] = std::chrono::steady_clock::duration::zero();
+      zbpt_time[k][j] = std::chrono::steady_clock::duration::zero();
+    }
+  }
+
   // init db
   bt tree_vec4("test_vec4.db", false);
   zbt z_tree_vec4("zbpt_vec4.db", false);
