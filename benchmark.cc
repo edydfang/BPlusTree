@@ -163,9 +163,9 @@ int main() {
       for (int j = 0; j < 7; j++) {
         // cout << "iteration = " << i << " key_idx = " << (int)k
         //      << " left = " << left << " right = " << right[j] << std::endl;
-
+        bpt_test(tree_vec4, k, l_key, r_key[j], values);
         start = high_resolution_clock::now();
-        int bpt_num = bpt_test(tree_vec4, k, l_key, r_key[j], values);
+        bpt_test(tree_vec4, k, l_key, r_key[j], values);
         end = high_resolution_clock::now();
         tmp = std::chrono::duration_cast<duration<double, std::milli>>(end -
                                                                        start);
@@ -174,9 +174,9 @@ int main() {
         for (int i = 0; i < 1500000; i++) dummy[i] = 1;
         // cout << " num = " << bpt_num << " time = " << tmp.count() << "ms"
         //      << std::endl;
-
+        zbpt_test(z_tree_vec4, k, l_key, r_key[j], values);
         start = high_resolution_clock::now();
-        int zbpt_num = zbpt_test(z_tree_vec4, k, l_key, r_key[j], values);
+        zbpt_test(z_tree_vec4, k, l_key, r_key[j], values);
         end = high_resolution_clock::now();
         tmp = std::chrono::duration_cast<duration<double, std::milli>>(end -
                                                                        start);

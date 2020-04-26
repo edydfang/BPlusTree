@@ -49,7 +49,7 @@ int main() {
       std::chrono::steady_clock::duration::zero();
   duration<double, std::milli> tmp;
 
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 1; i++) {
     start = high_resolution_clock::now();
     dbgen();
     end = high_resolution_clock::now();
