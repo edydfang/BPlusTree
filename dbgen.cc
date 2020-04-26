@@ -36,9 +36,9 @@ void dbgen() {
     // cout << line << std::endl;
     assert(db.insert(bpt::vec4_t(date2keyarr(line, i)), i) == 0);
     i++;
-    if (i % 100000 == 0) {
-      cout << "Finished " << i << " insertion." << std::endl;
-    }
+    // if (i % 100000 == 0) {
+    //   cout << "Finished " << i << " insertion." << std::endl;
+    // }
   }
   fin.clear();
   fin.close();
