@@ -1,5 +1,6 @@
 
 echo "----------ORDER = 50, SIZE = 1G----------"
+make dbgen ORDER=-DBP_ORDER=50 SOURCE=-DSOURCE='\"data/1G.txt\"'
 ./dbgen
 make zdbgen ORDER=-DBP_ORDER=50 SOURCE=-DSOURCE='\"data/1G.txt\"'
 ./zdbgen
@@ -21,7 +22,7 @@ make dbgen ORDER=-DBP_ORDER=200 SOURCE=-DSOURCE='\"data/1G.txt\"'
 ./dbgen
 make zdbgen ORDER=-DBP_ORDER=200 SOURCE=-DSOURCE='\"data/1G.txt\"'
 ./zdbgen
-make benchmark ORDER=-DBP_ORDER=200 SOURCE=-DSOURCE='\"data/1G.txt\"'
+make benchmark ORDER=-DBP_ORDER=200
 ./benchmark
 make clean
 
