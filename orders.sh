@@ -1,4 +1,4 @@
-
+make clean
 echo "----------ORDER = 50, SIZE = 1G----------"
 make dbgen ORDER=-DBP_ORDER=50 SOURCE=-DSOURCE='\"data/1G.txt\"'
 ./dbgen
