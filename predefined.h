@@ -12,7 +12,9 @@ namespace bpt {
 
 /* predefined B+ info */
 #ifndef UNIT_TEST
+#ifndef BP_ORDER
 #define BP_ORDER 20
+#endif
 #else
 #define BP_ORDER 4
 #endif

@@ -11,7 +11,7 @@ int main(int argc, char **argv) {
   }
 
   std::ifstream fin(argv[1], std::ios::in);
-  std::ofstream fout("data/result.txt", std::ios::trunc | std::ios::out);
+  std::ofstream fout("data/li_short_10.txt", std::ios::trunc | std::ios::out);
 
   char line[1024] = {0};
   char tmp[33] = {0};
