@@ -23,7 +23,7 @@ make
 ## Benchmark
 
 1. generate the lineitem table flat file using TPC-H benchamrk generation tool
-2. `./data_process <input-data-file>` to get flat file with only data columns
+2. `./data_process <input-data-file>` to get flat file with only three date columns
 3. `./db_gen` or `./zdb_gen` to generate database file for the baseline and the zonemap enhanced version.
 4. `./benchmark` to run benchmark
 
